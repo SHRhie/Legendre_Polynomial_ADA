@@ -1,0 +1,2 @@
+l1_absolute_error:  0.32059375679859414
+l2_relative_error:   1.3946757034825796
