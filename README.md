@@ -1,1 +1,1 @@
-# Legendre_Polynomial_ADA
+# Legendre_Polynomial-based_ADA
