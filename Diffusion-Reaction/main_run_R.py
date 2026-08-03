@@ -35,7 +35,8 @@ def run(trial, condition):
     # Material Properties
     viscosity = .01/np.pi
     time_concern = 1.
-    L = 1.
+    L = np.pi  # unified with main_run_LPA.py: x in [-pi, pi] (the manufactured
+                # solution violates the u(+-L)=0 BC when L=1, flooring the error at ~0.575)
 
     # Set boundary
     tmin = 0.

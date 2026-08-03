@@ -1,0 +1,41 @@
+{
+  "benchmark": "kovasznay",
+  "key": "FF",
+  "key_id": "FF_s1",
+  "nh": 2,
+  "nn": 10,
+  "trial": 3,
+  "seed": 1237,
+  "lpa_order": null,
+  "lpa_panels": null,
+  "ff_sigma": 1.0,
+  "ff_features": 3,
+  "lr": 0.01,
+  "adam_steps": 200,
+  "lbfgs_maxiter": 40000,
+  "N_b": 200,
+  "N_r": 10000,
+  "domain": [
+    [
+      -0.5,
+      1.0
+    ],
+    [
+      -0.5,
+      1.5
+    ]
+  ],
+  "n_params": 213,
+  "lpa_ref_params": 203,
+  "final_loss": 0.12238095700740814,
+  "time_adam": 10.922221899032593,
+  "time_lbfgs": 532.318039894104,
+  "lbfgs_steps": 12223,
+  "machine": "arm64",
+  "l1_absolute_u": 0.03160169380836041,
+  "l2_relative_u": 0.032532861127814006,
+  "l1_absolute_v": 0.021577240346142827,
+  "l2_relative_v": 0.272208587999487,
+  "l1_absolute_p": 0.03416874700813654,
+  "l2_relative_p": 0.12783196854614154
+}
