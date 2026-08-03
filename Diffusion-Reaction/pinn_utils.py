@@ -5,11 +5,63 @@ import os
 import matplotlib.pyplot as plt
 import scipy.io
 
-from drawnow import drawnow
+try:
+    from drawnow import drawnow
+except ImportError:
+    def drawnow(draw_func, *args, **kwargs):
+        draw_func()
+from tqdm import tqdm
 from matplotlib.pyplot import cm
 
 import sympy as sp
 import os
+import sys
+import platform
+import multiprocessing as mp
+
+
+def set_global_seed(seed):
+    np.random.seed(seed)
+    tf.random.set_seed(seed)
+
+
+def print_runtime_info(seed=None, extra_config=None):
+    print('\nRuntime info (TensorFlow):')
+    print(f'  python: {sys.version.split()[0]}')
+    print(f'  platform: {platform.platform()}')
+    print(f'  machine: {platform.machine()}')
+    print(f'  numpy: {np.__version__}')
+    print(f'  scipy: {scipy.__version__}')
+    print(f'  tensorflow: {tf.__version__}')
+    if seed is not None:
+        print(f'  seed: {seed}')
+    if extra_config:
+        for key in sorted(extra_config):
+            print(f'  {key}: {extra_config[key]}')
+
+
+class FourierFeatures(tf.keras.layers.Layer):
+    """Random Fourier feature mapping (Tancik et al. 2020).
+    gamma(x) = [cos(2*pi*B*x), sin(2*pi*B*x)], B ~ N(0, sigma^2), B fixed (non-trainable).
+    Applied after the [-1,1] input scaling layer.
+    """
+    def __init__(self, num_features=10, sigma=1.0, DTYPE='float32', seed=None):
+        super(FourierFeatures, self).__init__()
+        self.num_features = num_features
+        self.sigma = sigma
+        self.DTYPE = DTYPE
+        self.seed = seed
+    def build(self, input_shape):
+        in_dim = int(input_shape[-1])
+        rng = np.random.default_rng(self.seed)
+        B0 = rng.normal(0.0, self.sigma, size=(in_dim, self.num_features)).astype(self.DTYPE)
+        self.B = self.add_weight('B', shape=(in_dim, self.num_features),
+            initializer=tf.keras.initializers.Constant(B0), trainable=False, dtype=self.DTYPE)
+    def call(self, inputs):
+        if inputs.dtype != self.DTYPE:
+            inputs = tf.cast(inputs, self.DTYPE)
+        proj = 2.0*np.pi*tf.matmul(inputs, self.B)
+        return tf.concat([tf.math.cos(proj), tf.math.sin(proj)], axis=1)
 
 def get_Legendre_coefs(order=0, n_panel=10):
     x = sp.symbols('x')
@@ -124,23 +176,48 @@ def get_Xr(lb, ub, N_r, DTYPE='float32'):
     return X_r
                   
 class Build_PINN():
-    def __init__(self, lb, ub, 
-        num_hidden_layers=2, 
-        num_neurons_per_layer=10, 
-        key = 'R'):        
+    def __init__(self, lb, ub,
+        num_hidden_layers=2,
+        num_neurons_per_layer=10,
+        key = 'R',
+        lpa_order=3,
+        lpa_panels=30,
+        ff_sigma=1.0,
+        ff_features=3,
+        ff_seed=None):
         self.num_hidden_layers = num_hidden_layers
         self.num_neurons_per_layer = num_neurons_per_layer
         self.lb = lb
         self.ub = ub
         self.key =key
+        self.lpa_order = lpa_order
+        self.lpa_panels = lpa_panels
+        self.ff_sigma = ff_sigma
+        self.ff_features = ff_features
+        self.ff_seed = ff_seed
         if key == 'R':
-            self.model = self.init_model_VAN()        
+            self.model = self.init_model_VAN()
         elif key == 'ADAF':
             self.model = self.init_model_ADAF()
         elif key == 'LPA':
-            self.model = self.init_model_LPA()            
+            self.model = self.init_model_LPA()
+        elif key.startswith('FF'):
+            self.model = self.init_model_FF()
         else:
             pass
+    def init_model_FF(self):
+        model = tf.keras.Sequential()
+        model.add(tf.keras.Input(2))
+        scaling_layer = tf.keras.layers.Lambda(
+            lambda x: 2.0*(x-self.lb)/(self.ub-self.lb) -1.0)
+        model.add(scaling_layer)
+        model.add(FourierFeatures(self.ff_features, self.ff_sigma, seed=self.ff_seed))
+        for _ in range(self.num_hidden_layers):
+            model.add(tf.keras.layers.Dense(self.num_neurons_per_layer,
+                activation=tf.keras.activations.get('tanh'),
+                kernel_initializer='glorot_normal'))
+        model.add(tf.keras.layers.Dense(1))
+        return model
     def init_model_VAN(self):
         model = tf.keras.Sequential()
         model.add(tf.keras.Input(2))
@@ -190,14 +267,15 @@ class Build_PINN():
                 kernel_initializer='glorot_normal', 
                 activation='tanh',
                 )(hiddens)
-        hiddens = LPA(3,30)(hiddens)
+        hiddens = LPA(self.lpa_order, self.lpa_panels)(hiddens)
         #hiddens = tf.math.tanh(hiddens)
         prediction = tf.keras.layers.Dense(1)(hiddens)
         model = tf.keras.Model(X_in, prediction)
         return model
 
 class Solver_PINN():
-    def __init__(self, pinn, properties, loss_dict, N_0=150, N_b=150, N_r=2500, show=False, DTYPE='float32'):
+    def __init__(self, pinn, properties, loss_dict, N_0=150, N_b=150, N_r=2500, show=False, DTYPE='float32', lr=1e-2):
+        self.lr_init = lr
         self.ref_pinn = None
         self.loss_element = None                
         self.ref_index = 0
@@ -283,8 +361,8 @@ class Solver_PINN():
     def build_optimizer(self):
         del self.lr
         del self.optim
-        self.lr = 1e-2
-        self.optim = tf.keras.optimizers.Adam(learning_rate=self.lr) 
+        self.lr = self.lr_init
+        self.optim = tf.keras.optimizers.Adam(learning_rate=self.lr)
     def call_exact(self, X_0):
         t, x = tf.split(X_0, 2, axis=1)
         return tf.math.exp(-t)*(tf.math.sin(x) + tf.math.sin(2.*x)/2. + tf.math.sin(3.*x)/3. + tf.math.sin(4.*x)/4. + tf.math.sin(8.*x)/8.)
@@ -359,11 +437,11 @@ class Solver_PINN():
         self.optim.apply_gradients(zip(grad_theta, self.cur_pinn.model.trainable_weights))
         return 
     def train_adam(self, N=5000):
-        for num_step in range(N):
-            self.train_step()            
+        for num_step in tqdm(range(N), desc='Adam', unit='steps'):
+            self.train_step()
             if num_step%50 == 0:
-                self.accuracy_update()            
-                print('Iter {:05d}: loss = {:10.8e}'.format(num_step, self.loss))                
+                self.accuracy_update()
+                print('Iter {:05d}: loss = {:10.8e}'.format(num_step, self.loss))
                 if self.show:
                     drawnow(self.plot_iteration)
     def accuracy_update(self):
@@ -377,17 +455,20 @@ class Solver_PINN():
         self.accuracy_history.append(self.accuracy_element)    
     def callback(self, xr=None):
         self.loss_history.append(self.loss)
-        if self.lbfgs_step % 50 == 0:        
+        if getattr(self, 'pbar', None) is not None:
+            self.pbar.update(1)
+        if self.lbfgs_step % 50 == 0:
             self.accuracy_update()
             if self.show:
                 drawnow(self.plot_iteration)
-        self.lbfgs_step+=1            
-    def ScipyOptimizer(self, method='L-BFGS-B', **kwargs):    
+        self.lbfgs_step+=1
+    def ScipyOptimizer(self, method='L-BFGS-B', **kwargs):
+        self.pbar = tqdm(total=kwargs.get('options', {}).get('maxiter', None), desc='L-BFGS-B', unit='steps')
         def get_weight_tensor():
             weight_list = []
             shape_list = []
             
-            for v in self.cur_pinn.model.variables:
+            for v in self.cur_pinn.model.trainable_variables:
                 shape_list.append(v.shape)
                 weight_list.extend(v.numpy().flatten())
             weight_list = tf.convert_to_tensor(weight_list)
@@ -396,7 +477,7 @@ class Solver_PINN():
         x0, shape_list = get_weight_tensor()
         def set_weight_tensor(weight_list):        
             idx=0
-            for v in self.cur_pinn.model.variables:
+            for v in self.cur_pinn.model.trainable_variables:
                 vs = v.shape
                 
                 if len(vs) == 2:
@@ -431,12 +512,16 @@ class Solver_PINN():
             self.loss = loss
             return loss, grad_flat
 
-        return scipy.optimize.minimize(fun=get_loss_and_grad,
+        result = scipy.optimize.minimize(fun=get_loss_and_grad,
                                     x0 = x0,
                                     jac = True,
                                     callback=self.callback,
                                     method=method,
-                                    **kwargs)    
+                                    **kwargs)
+        if getattr(self, 'pbar', None) is not None:
+            self.pbar.close()
+            self.pbar = None
+        return result
     def save_results(self, trial, times, num_hidden_layers=2, num_neurons_per_layer=10):
         self.accuracy_update()
         self.loss_history.append(self.loss)

@@ -1,0 +1,41 @@
+{
+  "benchmark": "kovasznay",
+  "key": "LPA",
+  "key_id": "LPA_P6_N30",
+  "nh": 2,
+  "nn": 10,
+  "trial": 1,
+  "seed": 1235,
+  "lpa_order": 6,
+  "lpa_panels": 30,
+  "ff_sigma": null,
+  "ff_features": null,
+  "lr": 0.01,
+  "adam_steps": 200,
+  "lbfgs_maxiter": 40000,
+  "N_b": 200,
+  "N_r": 10000,
+  "domain": [
+    [
+      -0.5,
+      1.0
+    ],
+    [
+      -0.5,
+      1.5
+    ]
+  ],
+  "n_params": 203,
+  "lpa_ref_params": null,
+  "final_loss": 0.0002976048272103071,
+  "time_adam": 20.605633020401,
+  "time_lbfgs": 825.1208550930023,
+  "lbfgs_steps": 8574,
+  "machine": "arm64",
+  "l1_absolute_u": 0.0017884676059799149,
+  "l2_relative_u": 0.0018507513978309879,
+  "l1_absolute_v": 0.0011320249910963705,
+  "l2_relative_v": 0.01415823396878042,
+  "l1_absolute_p": 0.001458605504889119,
+  "l2_relative_p": 0.005031334923593658
+}

@@ -1,0 +1,39 @@
+{
+  "benchmark": "diffusion_reaction",
+  "key": "FF",
+  "key_id": "FF_s10",
+  "nh": 4,
+  "nn": 10,
+  "trial": 2,
+  "seed": 1236,
+  "lpa_order": null,
+  "lpa_panels": null,
+  "ff_sigma": 10.0,
+  "ff_features": 3,
+  "lr": 0.01,
+  "adam_steps": 200,
+  "lbfgs_maxiter": 40000,
+  "N_0": 200,
+  "N_b": 200,
+  "N_r": 10000,
+  "L": 3.141592653589793,
+  "domain": [
+    [
+      0.0,
+      1.0
+    ],
+    [
+      -3.141592653589793,
+      3.141592653589793
+    ]
+  ],
+  "n_params": 411,
+  "lpa_ref_params": 401,
+  "l1_absolute": 0.4533081527282438,
+  "l2_relative": 1.0002667005564332,
+  "final_loss": 17.703853607177734,
+  "time_adam": 8.075999021530151,
+  "time_lbfgs": 471.98730874061584,
+  "lbfgs_steps": 11557,
+  "machine": "arm64"
+}

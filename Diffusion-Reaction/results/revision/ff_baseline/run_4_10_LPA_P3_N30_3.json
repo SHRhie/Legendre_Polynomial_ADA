@@ -1,0 +1,39 @@
+{
+  "benchmark": "diffusion_reaction",
+  "key": "LPA",
+  "key_id": "LPA_P3_N30",
+  "nh": 4,
+  "nn": 10,
+  "trial": 3,
+  "seed": 1237,
+  "lpa_order": 3,
+  "lpa_panels": 30,
+  "ff_sigma": null,
+  "ff_features": null,
+  "lr": 0.01,
+  "adam_steps": 200,
+  "lbfgs_maxiter": 40000,
+  "N_0": 200,
+  "N_b": 200,
+  "N_r": 10000,
+  "L": 3.141592653589793,
+  "domain": [
+    [
+      0.0,
+      1.0
+    ],
+    [
+      -3.141592653589793,
+      3.141592653589793
+    ]
+  ],
+  "n_params": 401,
+  "lpa_ref_params": null,
+  "l1_absolute": 0.001916234179200006,
+  "l2_relative": 0.00433812802337789,
+  "final_loss": 0.0006747254519723356,
+  "time_adam": 8.703441858291626,
+  "time_lbfgs": 113.14646816253662,
+  "lbfgs_steps": 2830,
+  "machine": "arm64"
+}
