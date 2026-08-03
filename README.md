@@ -5,8 +5,7 @@
 All benchmark results were regenerated under a single seed-controlled protocol
 (≥5 seeds per configuration, mean ± std with medians), with new experiments:
 a parameter-matched random Fourier-feature baseline, a polynomial-order study
-including orders below the PDE order, a fixed-degrees-of-freedom
-(p- vs h-refinement) study, a hyperparameter sensitivity grid, and a
+including orders below the PDE order, a panel-count reparameterization study at matched nominal budget, a hyperparameter sensitivity grid, and a
 PI-DeepONet re-run with a full Reynolds sweep. See `revision/README.md` for
 the framework and `results/` for aggregated CSVs and figures.
 
@@ -39,7 +38,7 @@ Legendre_Polynomial_ADA/
 └── results/                 # aggregated outputs (CSV + PNG), one folder per experiment
     ├── ff_baseline/         #   vanilla vs Fourier-feature vs LPA, three benchmarks
     ├── low_order/           #   polynomial order P ∈ {1,2,3,4,6} incl. below PDE order
-    ├── dof_fixed/           #   fixed activation budget (P+1)×N ≈ 210
+    ├── dof_fixed/           #   panel-count reparameterization, matched nominal budget
     ├── sensitivity/         #   P × N_panel grid + learning-rate sweep heatmaps
     └── deeponet_rev/        #   PI-DeepONet, four widths, Reynolds sweep
 ```
