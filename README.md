@@ -17,7 +17,6 @@ Legendre_Polynomial_ADA/
 │   ├── pinn_utils.py        #   models (vanilla R / single-output R1 / LPA / FourierFeatures) + solver
 │   ├── main_run_R|LPA|ADAF.py   # legacy entry scripts (one model each)
 │   ├── revision_run.py      #   seed-controlled single-run CLI (unified protocol)
-│   ├── results/revision/    #   per-run error histories + config JSONs, grouped by experiment
 │   └── checkpoints/         #   legacy trained weights
 ├── Diffusion-Reaction/      # 1D diffusion-reaction benchmark (x ∈ [-π, π], multi-frequency source)
 │   └── (same layout as 2D_Helmholtz)
@@ -28,25 +27,24 @@ Legendre_Polynomial_ADA/
 │   ├── core/                #   model builders, physics residuals, sampling, metrics
 │   ├── train_deeponet.py    #   legacy training entry (config.py driven)
 │   ├── revision_run_deeponet.py  # seed-controlled CLI + full Re = 1…199 sweep
-│   ├── results/revision/    #   error histories, Re-sweep CSVs, run configs
 │   └── checkpoints/revision/#   archived weights for all unified-protocol runs
 ├── revision/                # experiment framework
 │   ├── run_queue.py         #   resumable multi-process job queue
 │   ├── make_jobs*.py        #   job-list generators for the campaigns
 │   ├── aggregate_*.py       #   build tables/figures from run JSONs
 │   └── plot_style.py        #   shared figure conventions (serif, 400 dpi, inward ticks)
-└── results/                 # aggregated outputs (CSV + PNG), one folder per experiment
-    ├── ff_baseline/         #   vanilla vs Fourier-feature vs LPA, three benchmarks
-    ├── low_order/           #   polynomial order P ∈ {1,2,3,4,6} incl. below PDE order
-    ├── dof_fixed/           #   panel-count reparameterization, matched nominal budget
-    ├── sensitivity/         #   P × N_panel grid + learning-rate sweep heatmaps
-    └── deeponet_rev/        #   PI-DeepONet, four widths, Reynolds sweep
+└── results/                 # representative figures per experiment (headline plots)
 ```
 
 Per-benchmark file roles: `pinn_utils.py` holds all model definitions and the
 two-stage solver (Adam → L-BFGS-B); `main_run_<KEY>.py` are the original
 one-model entry scripts; `revision_run.py` is the parameterized CLI used for
 all regenerated results (`--key {R|R1|LPA|FF} --order --panels --sigma --lr
---nh --nn --trial --exp`). Raw per-run outputs land in
-`<benchmark>/results/revision/<experiment>/`; cross-run tables and figures are
-built by `revision/aggregate_*.py` into the top-level `results/`.
+--nh --nn --trial --exp`). Running it writes per-run error histories and
+config JSONs under `<benchmark>/results/revision/<experiment>/` (generated
+locally; not tracked in this repository), from which
+`revision/aggregate_*.py` builds the tables and figures. This repository
+tracks the implementation code, trained PI-DeepONet weights
+(`DeepONet/checkpoints/revision/`), and representative figures; complete
+per-run logs, manifests, and CSV aggregates are archived by the authors and
+available upon reasonable request.

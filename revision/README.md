@@ -26,11 +26,9 @@ medians, over ≥5 seeded runs (seed = 1234 + trial index).
   `make_jobs*.py`), `aggregate_*.py` (tables/figures from the run JSONs;
   paths assume the local experiment tree), `plot_style.py` (figure
   conventions).
-- **`results/`** (top level) — aggregated CSVs and figures per experiment:
-  `ff_baseline` (vanilla vs Fourier-feature vs LPA, three benchmarks),
-  `low_order` (P ∈ {1,2,3,4,6} incl. below the PDE order),
-  `dof_fixed` (panel-count reparameterization at matched nominal budget (P+1)×N ≈ 210; note the layer's effective coefficient space has dimension P+1 regardless of N), `sensitivity` (P × N grid + learning-rate
-  sweep), `deeponet_rev` (PI-DeepONet, four widths, Re sweep).
+- **`results/`** (top level) — representative figures per experiment.
+  Full per-run logs and CSV aggregates are generated locally by these
+  scripts and are available from the authors upon reasonable request.
 
 ## Code fixes
 
