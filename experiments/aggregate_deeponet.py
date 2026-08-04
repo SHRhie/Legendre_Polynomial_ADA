@@ -15,11 +15,11 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from agg_common import RESULTS, fmt_sci, mean_std
-from plot_style import apply_style, savefig
+from paths import runs_dir
+from plot_style import apply_style, savefig, panel_label, LETTERS
 import matplotlib.pyplot as plt
 
-DODIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                     'DeepONet', 'results', 'runs', 'deeponet_rev')
+DODIR = runs_dir('deeponet', 'deeponet_rev')
 OUT = os.path.join(RESULTS, 'deeponet_rev')
 os.makedirs(OUT, exist_ok=True)
 
@@ -92,6 +92,7 @@ def main():
                 ax.set_xlabel(r'$Re$')
             if j == 0:
                 ax.set_ylabel('%d neurons\n' % nn + r'Relative $L_2$')
+            panel_label(ax, LETTERS[i * len(VARS) + j], loc='upper left', pad=0.075)
     axes[0][0].legend(fontsize=10, loc='upper right')
     savefig(fig, os.path.join(OUT, 'fig6_replacement.png'))
 

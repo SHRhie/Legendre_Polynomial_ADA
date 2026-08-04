@@ -1,0 +1,10 @@
+# Title: Paired statistics for the same-protocol comparison (Holm-adjusted)
+# Description: Per-comparison mean and median difference of log10 relative L2 over the ten held-out paired seeds, paired bootstrap 95% interval, exact Wilcoxon signed-rank p value and the Holm-adjusted p value across the five comparisons.
+# Note: n = 10 paired seeds; the proposed layer is the reference of each pair
+# Rows: 5
+comparison,n_pairs,mean_log10_diff,median_log10_diff,paired_bootstrap_ci95_lo,paired_bootstrap_ci95_hi,wilcoxon_exact_p,direction,holm_adjusted_p
+LPA - TANH,10,-1.5053032902030128,-1.3316314816518149,-1.8335168568670024,-1.2046028654259335,0.001953125,LPA better,0.009765625
+LPA - FF,10,-1.3457740518402015,-1.297493543570033,-1.7135231872495755,-0.9724736964164578,0.001953125,LPA better,0.009765625
+LPA - TFF,10,0.6306600350100254,0.9601336277898092,-0.1630121208082898,1.4007445821508089,0.193359375,LPA worse,0.193359375
+LPA - SIREN,10,1.696777307496178,1.8209664947334472,0.8607953442561149,2.396089573299804,0.009765625,LPA worse,0.01953125
+LPA - NLAAF,10,-1.7906583822900095,-1.7700025493425224,-1.9525769706866072,-1.6158577661176563,0.001953125,LPA better,0.009765625

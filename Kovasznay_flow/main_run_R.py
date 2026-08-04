@@ -33,8 +33,8 @@ def run(trial, condition):
     properties = {
         'xmin':xmin,
         'xmax':xmax,
-        'xmin':ymin,
-        'xmax':ymax,    
+        'ymin':ymin,
+        'ymax':ymax,    
         }
 
     DTYPE = 'float32'

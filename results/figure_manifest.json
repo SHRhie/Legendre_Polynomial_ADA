@@ -1,0 +1,381 @@
+{
+ "meta": {
+  "n_figures": 27,
+  "style": {
+   "font": "Times New Roman, mathtext.stix, font.size 14",
+   "dpi": 400,
+   "ticks": "4-direction inward",
+   "legend": "frameless",
+   "savefig": "bbox_inches='tight'",
+   "metrics": "relative L2, absolute L1",
+   "panel_labels": "(a)(b)(c)... inside the axes, serif upright; upper right on line plots, upper left in white on field images (revision/plot_style.py:panel_label)"
+  },
+  "placement_rule": "A figure is proposed for the main text only if it answers a reviewer comment that no other figure answers. Replacements inherit the slot of the figure they replace. Everything else is supplementary. 'unused' marks internal evidence images. The final selection is the authors' decision.",
+  "main_text_new_figures": [
+   "results/major1_compare/confirm_box_strip.png",
+   "results/low_order/error_vs_P.png",
+   "results/sensitivity/heatmap_median.png",
+   "results/major1_compare/confirm_error_vs_params.png"
+  ],
+  "missing": []
+ },
+ "figures": [
+  {
+   "path": "results/manuscript_revisions/figures/fig1_corrected.png",
+   "sha256": "2737cb1fe28f4338c48a95639a45121068c9e4966255191ce1d5591241d0a694",
+   "bytes": 993572,
+   "generated_at": "2026-08-04T17:22:24+09:00",
+   "generator": "manual pixel edit of manuscript_mlst.docx word/media/image1.png (revision/README_fig1_edit.md documents the edit)",
+   "reviewer_ref": [
+    "R2-Comment6"
+   ],
+   "proposed_placement": "main:Figure 1",
+   "replaces_original_figure": 1,
+   "rationale": "Original schematic with the spelling of 'Expansion' corrected; no other change. The 'Fourier Coefficient' label is deliberately kept, matching the Section 2 title."
+  },
+  {
+   "path": "results/manuscript_revisions/figures/fig2_replacement.png",
+   "sha256": "c8346473a7e34850057c3d13cea20b4b0f84f622b7d9c4db3d79aeb301482199",
+   "bytes": 482012,
+   "generated_at": "2026-08-04T17:23:41+09:00",
+   "generator": "revision/make_paper_figures.py",
+   "reviewer_ref": [
+    "R1-Minor4",
+    "R2-Comment4"
+   ],
+   "proposed_placement": "main:Figure 2",
+   "replaces_original_figure": 2,
+   "rationale": "Replaces the original: like-for-like single-output baseline, geometric-mean convergence over seeds, and field panels drawn on the true unit-square coordinates (the original axes were labelled [-1,1])."
+  },
+  {
+   "path": "results/manuscript_revisions/figures/fig3_replacement.png",
+   "sha256": "ea3d6d8b212a71a5d17eace73183100e762527b516190641fe1e93eec3ff3ed6",
+   "bytes": 518331,
+   "generated_at": "2026-08-04T17:23:41+09:00",
+   "generator": "revision/make_paper_figures.py",
+   "reviewer_ref": [
+    "R1-Minor4"
+   ],
+   "proposed_placement": "main:Figure 3",
+   "replaces_original_figure": 3,
+   "rationale": "Replaces the original: the baseline curve is re-run on the correct domain x in [-pi, pi] and the profile panels use that domain."
+  },
+  {
+   "path": "results/manuscript_revisions/figures/fig4_replacement.png",
+   "sha256": "ebd33766ef3abcd80eb23de4a8ee00a4193f6ab9f16b391a77bfa616208b8c65",
+   "bytes": 414098,
+   "generated_at": "2026-08-04T17:23:41+09:00",
+   "generator": "revision/make_paper_figures.py",
+   "reviewer_ref": [
+    "R1-Minor4"
+   ],
+   "proposed_placement": "main:Figure 4",
+   "replaces_original_figure": 4,
+   "rationale": "Replaces the original, which plotted the absolute L1 error of the v-velocity under a relative-L2 axis label; regenerated with the correct metric."
+  },
+  {
+   "path": "results/manuscript_revisions/figures/fig5_replacement.png",
+   "sha256": "9c823dab582481758bc07b39d2c652666ed6e818176463539868da648abe3702",
+   "bytes": 230128,
+   "generated_at": "2026-08-04T17:23:42+09:00",
+   "generator": "revision/make_fig5.py",
+   "reviewer_ref": [
+    "R1-Major5"
+   ],
+   "proposed_placement": "main:Figure 5",
+   "replaces_original_figure": 5,
+   "rationale": "Redrawn operator-network schematic with the corrected latent dimension (R^64) and the channel-wise layer stated explicitly (K = 3, N_p = 16 per channel). Editable source, unlike the original raster."
+  },
+  {
+   "path": "results/manuscript_revisions/figures/fig5_original_corrected.png",
+   "sha256": "409c0cb0ad1cd26e4a84ed9bd324fc6d7465ab22ed632e6b57c91400b983c150",
+   "bytes": 303005,
+   "generated_at": "2026-08-04T17:22:24+09:00",
+   "generator": "manual pixel edit of word/media/image5.png",
+   "reviewer_ref": [
+    "R1-Major5"
+   ],
+   "proposed_placement": "alternative to main:Figure 5",
+   "replaces_original_figure": 5,
+   "rationale": "Minimal alternative: the original raster with only the latent-dimension superscript changed from 32 to 64, for authors who prefer to keep the original drawing."
+  },
+  {
+   "path": "results/deeponet_rev/fig6_replacement.png",
+   "sha256": "4103d468c9ccab0b5c73e05925e194810cf9e8bdf3be433558495d199d21f8aa",
+   "bytes": 1152022,
+   "generated_at": "2026-08-04T16:56:50+09:00",
+   "generator": "revision/aggregate_deeponet.py",
+   "reviewer_ref": [
+    "R2-Comment7"
+   ],
+   "proposed_placement": "main:Figure 6",
+   "replaces_original_figure": 6,
+   "rationale": "Replaces the original: five seeds per cell with interquartile bands, all four widths and the full Re = 1-199 sweep; shows that the two error profiles share their shape, which is the referee's point."
+  },
+  {
+   "path": "results/major1_compare/confirm_box_strip.png",
+   "sha256": "3207b01a468ea4f5db9f359b4dd549889f4b0c43705e396dfa2bd47e0c96c0d7",
+   "bytes": 237109,
+   "generated_at": "2026-08-04T15:10:26+09:00",
+   "generator": "revision/aggregate_major1.py",
+   "reviewer_ref": [
+    "R1-Major1",
+    "R2-Comment4"
+   ],
+   "proposed_placement": "main:new",
+   "replaces_original_figure": null,
+   "rationale": "Per-seed distributions of all seven compared models under one protocol. This is the only figure that shows the requested comparison against Fourier features, SIREN and adaptive tanh, including that SIREN attains lower typical errors."
+  },
+  {
+   "path": "results/low_order/error_vs_P.png",
+   "sha256": "f54e936e9df1a552d781d378cd454a8ca1138cbcb6637ab472da1377542c1c33",
+   "bytes": 215555,
+   "generated_at": "2026-08-03T00:20:23+09:00",
+   "generator": "revision/aggregate_task2.py",
+   "reviewer_ref": [
+    "R2-Comment2",
+    "R2-Comment3"
+   ],
+   "proposed_placement": "main:new",
+   "replaces_original_figure": null,
+   "rationale": "Error versus polynomial order including orders below the differential order of the PDE - the experiment the referee asked for."
+  },
+  {
+   "path": "results/sensitivity/heatmap_median.png",
+   "sha256": "d051d978e09b8e2adcc733059ea3517de5ce5ad6b021dd1b83c8904b0494ce6e",
+   "bytes": 173028,
+   "generated_at": "2026-08-03T00:20:25+09:00",
+   "generator": "revision/aggregate_task4.py",
+   "reviewer_ref": [
+    "R1-Major4",
+    "R1-Minor1"
+   ],
+   "proposed_placement": "main:new",
+   "replaces_original_figure": null,
+   "rationale": "Median error over the order x panel-count grid; the requested sensitivity analysis and the basis for the practical-selection discussion."
+  },
+  {
+   "path": "results/major1_compare/confirm_error_vs_params.png",
+   "sha256": "18138f4f57e62f25573554d8412b9d003cad3e3f1243501d80da0408b3201264",
+   "bytes": 186693,
+   "generated_at": "2026-08-04T15:10:26+09:00",
+   "generator": "revision/aggregate_major1.py",
+   "reviewer_ref": [
+    "R1-Major1"
+   ],
+   "proposed_placement": "main:new",
+   "replaces_original_figure": null,
+   "rationale": "Error versus trainable-parameter count for every compared model, which is where the compactness claim has to be judged."
+  },
+  {
+   "path": "results/low_order/residual_norms_vs_P.png",
+   "sha256": "1f7da60e62b0bae7a53e2b2e48d3287fcfc816c8e80d745679abf5d0bbe6dc25",
+   "bytes": 160020,
+   "generated_at": "2026-08-03T00:20:24+09:00",
+   "generator": "revision/aggregate_task2.py",
+   "reviewer_ref": [
+    "R2-Comment3",
+    "R1-Major3"
+   ],
+   "proposed_placement": "supplementary",
+   "replaces_original_figure": null,
+   "rationale": "RMS norms of the residual and its second derivatives versus polynomial order; supports the mechanism discussion but duplicates the ordering already visible in the error-versus-order figure."
+  },
+  {
+   "path": "results/dof_fixed/tradeoff.png",
+   "sha256": "2b11abbcd2f70440b1cfe2f488cdbe353f48d8508a60d4dcb67782bd6e43d535",
+   "bytes": 300795,
+   "generated_at": "2026-08-04T16:54:08+09:00",
+   "generator": "revision/aggregate_task3.py",
+   "reviewer_ref": [
+    "R2-Comment3",
+    "R1-Minor1"
+   ],
+   "proposed_placement": "supplementary",
+   "replaces_original_figure": null,
+   "rationale": "Panel-count reparameterization at a matched nominal budget. Kept out of the main text because the differences are not significant (Kruskal-Wallis p = 0.322) and the original p- versus h-refinement reading is retracted."
+  },
+  {
+   "path": "results/sensitivity/heatmap_mean.png",
+   "sha256": "0fec9465841ced50ff12bf6ee3e8dbae0367b8f6a1dec3ec27804bcf0814b1ca",
+   "bytes": 170090,
+   "generated_at": "2026-08-03T00:20:25+09:00",
+   "generator": "revision/aggregate_task4.py",
+   "reviewer_ref": [
+    "R1-Major4"
+   ],
+   "proposed_placement": "supplementary",
+   "replaces_original_figure": null,
+   "rationale": "Mean view of the same grid; seed-bimodal cells make the mean less informative than the median."
+  },
+  {
+   "path": "results/sensitivity/heatmap_std.png",
+   "sha256": "3034abcb25a604031cc6926b5871874d441fbdedde5d4e8fd30f32cee82298a9",
+   "bytes": 184060,
+   "generated_at": "2026-08-03T00:20:25+09:00",
+   "generator": "revision/aggregate_task4.py",
+   "reviewer_ref": [
+    "R1-Major4"
+   ],
+   "proposed_placement": "supplementary",
+   "replaces_original_figure": null,
+   "rationale": "Standard deviation across seeds over the grid; documents where the bimodality lives."
+  },
+  {
+   "path": "results/sensitivity/lr_sweep.png",
+   "sha256": "a787a132752cfb9f6485cee9a7febde4c2eb3373fb96eda1056d8a998594e002",
+   "bytes": 165000,
+   "generated_at": "2026-08-03T00:20:25+09:00",
+   "generator": "revision/aggregate_task4.py",
+   "reviewer_ref": [
+    "R1-Major4"
+   ],
+   "proposed_placement": "supplementary",
+   "replaces_original_figure": null,
+   "rationale": "Adam warm-up rate sweep at the default cell only; reported as a cell-specific observation, not a general recommendation."
+  },
+  {
+   "path": "results/ff_baseline/conv_helmholtz2d.png",
+   "sha256": "9698599e6ce8069c3ead8691d4a38d5815a996ec3b704e92c8539e46870bb1f7",
+   "bytes": 161184,
+   "generated_at": "2026-08-04T16:54:09+09:00",
+   "generator": "revision/aggregate_task1.py",
+   "reviewer_ref": [
+    "R2-Comment4"
+   ],
+   "proposed_placement": "supplementary",
+   "replaces_original_figure": null,
+   "rationale": "Convergence of every model on the Helmholtz benchmark including all Fourier sigma values; the main-text Figure 2 shows the two headline curves only."
+  },
+  {
+   "path": "results/ff_baseline/conv_diffusion_reaction.png",
+   "sha256": "534647a307bf5a55a081f8f4005b07f74aef9edf56edb0314b819c8902c95ef5",
+   "bytes": 161528,
+   "generated_at": "2026-08-04T16:54:09+09:00",
+   "generator": "revision/aggregate_task1.py",
+   "reviewer_ref": [
+    "R2-Comment4"
+   ],
+   "proposed_placement": "supplementary",
+   "replaces_original_figure": null,
+   "rationale": "As above for the diffusion-reaction benchmark."
+  },
+  {
+   "path": "results/ff_baseline/conv_kovasznay.png",
+   "sha256": "23553d27d0e3a27a40f04ce7d3de64efb867fc4a76c3ead2b54571dd47368db2",
+   "bytes": 167868,
+   "generated_at": "2026-08-04T16:54:09+09:00",
+   "generator": "revision/aggregate_task1.py",
+   "reviewer_ref": [
+    "R2-Comment4"
+   ],
+   "proposed_placement": "supplementary",
+   "replaces_original_figure": null,
+   "rationale": "As above for the Kovasznay benchmark."
+  },
+  {
+   "path": "results/ff_baseline/bars_helmholtz2d.png",
+   "sha256": "4f983311b28e620b92a582ce849a683d53b257caed529b06c19e93da96f1a9bd",
+   "bytes": 121568,
+   "generated_at": "2026-08-04T16:54:09+09:00",
+   "generator": "revision/aggregate_task1.py",
+   "reviewer_ref": [
+    "R2-Comment4"
+   ],
+   "proposed_placement": "supplementary",
+   "replaces_original_figure": null,
+   "rationale": "Final-error bars with seed spread per model and depth, Helmholtz."
+  },
+  {
+   "path": "results/ff_baseline/bars_diffusion_reaction.png",
+   "sha256": "0b3344faceb01fd4f09efe5bc44cee85beecf41fb5d84ba77f01418f00bf483a",
+   "bytes": 128333,
+   "generated_at": "2026-08-04T16:54:09+09:00",
+   "generator": "revision/aggregate_task1.py",
+   "reviewer_ref": [
+    "R2-Comment4"
+   ],
+   "proposed_placement": "supplementary",
+   "replaces_original_figure": null,
+   "rationale": "As above for the diffusion-reaction benchmark."
+  },
+  {
+   "path": "results/ff_baseline/bars_kovasznay.png",
+   "sha256": "40350280e1b70e9dd17e1dbff4bcc794b3ab8c0d85ef660eb0cdad3cb8eb0b9d",
+   "bytes": 143546,
+   "generated_at": "2026-08-04T16:54:09+09:00",
+   "generator": "revision/aggregate_task1.py",
+   "reviewer_ref": [
+    "R2-Comment4"
+   ],
+   "proposed_placement": "supplementary",
+   "replaces_original_figure": null,
+   "rationale": "As above for the Kovasznay benchmark."
+  },
+  {
+   "path": "results/ff_baseline/ff_supp_lr.png",
+   "sha256": "2fdab51eb0542bcabf3e8a37f79859c185d851e469ca1be273548b39b1b3eacb",
+   "bytes": 167036,
+   "generated_at": "2026-08-04T16:54:09+09:00",
+   "generator": "revision/aggregate_task1.py",
+   "reviewer_ref": [
+    "R2-Comment4"
+   ],
+   "proposed_placement": "supplementary",
+   "replaces_original_figure": null,
+   "rationale": "Fourier-feature baseline at Adam warm-up rates 1e-2 and 1e-3, showing its failure is not a warm-up-rate artefact."
+  },
+  {
+   "path": "results/manuscript_revisions/figures/fig1_typo_evidence.png",
+   "sha256": "3c41993bc15a48da2f425fc09fe0a91cd771d4eba543f74821f241bf28c2c991",
+   "bytes": 567974,
+   "generated_at": "2026-08-04T16:51:39+09:00",
+   "generator": "5x crop of the original image1.png",
+   "reviewer_ref": [
+    "R2-Comment6"
+   ],
+   "proposed_placement": "unused",
+   "replaces_original_figure": null,
+   "rationale": "Internal evidence for the spelling error; not for publication."
+  },
+  {
+   "path": "results/manuscript_revisions/figures/fig1_typo_before_after.png",
+   "sha256": "5a2f8f92900a49e4c16f9812d0590bebbb66e9858c4c2facfe3a6b739926f3e1",
+   "bytes": 243021,
+   "generated_at": "2026-08-04T17:22:24+09:00",
+   "generator": "revision/README_fig1_edit.md",
+   "reviewer_ref": [
+    "R2-Comment6"
+   ],
+   "proposed_placement": "unused",
+   "replaces_original_figure": null,
+   "rationale": "Before/after comparison of the Figure 1 edit; internal record."
+  },
+  {
+   "path": "results/manuscript_revisions/figures/fig2_axis_mislabel_evidence.png",
+   "sha256": "9a945bd84b831d0c2f142e313b3a2cdddfb2ecf40fdb875b161b3ec8d3aa1b98",
+   "bytes": 334307,
+   "generated_at": "2026-08-04T16:56:49+09:00",
+   "generator": "3x crop of the original image2.png",
+   "reviewer_ref": [
+    "R1-Minor4"
+   ],
+   "proposed_placement": "unused",
+   "replaces_original_figure": null,
+   "rationale": "Internal evidence that the original Figure 2 field axes were labelled [-1,1]; not for publication."
+  },
+  {
+   "path": "results/manuscript_revisions/figures/fig5_latent_before_after.png",
+   "sha256": "f50a6fc41d31097cac6c7387396d5fa79a9c5c05731ed630303bd8e9c76680db",
+   "bytes": 107023,
+   "generated_at": "2026-08-04T17:22:24+09:00",
+   "generator": "revision/build_figure_manifest.py record",
+   "reviewer_ref": [
+    "R1-Major5"
+   ],
+   "proposed_placement": "unused",
+   "replaces_original_figure": null,
+   "rationale": "Before/after comparison of the Figure 5 latent-dimension edit; internal record."
+  }
+ ]
+}

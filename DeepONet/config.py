@@ -1,4 +1,21 @@
 # config.py
+#
+# LEGACY CONFIGURATION — not the source of the results reported in the revised
+# manuscript.  This file drives the original single-run training entry point
+# (train_deeponet.py).  Every operator-learning number in the revision comes
+# from run_experiment_deeponet.py, whose command line carries the settings
+# explicitly and records them in each run's JSON:
+#
+#     latent_dim   = 64      (--latent 64;        same as LATENT_DIM below)
+#     head_width   = 16      (--head-width 16;    differs from HEAD_WIDTH below)
+#     lpa_order    = 3       (--order 3)
+#     lpa_panels   = 16      (--panels 16)
+#     branch/trunk width sweep 8 / 16 / 32 / 64   (differs from ARCH_LIST below)
+#     Adam only, 5000 steps, lr 2e-3, Re sweep 1..199, 5 seeds per cell
+#
+# The values kept here are therefore historical.  Do not cite them as the
+# configuration of the reported experiments; see experiments/README.md and
+# results/deeponet_rev/runs.csv (one row per reported run).
 import os
 
 # =========================
