@@ -1,4 +1,4 @@
-"""Simple job queue for revision experiment runs.
+"""Simple job queue for unified-protocol experiment runs.
 
 Reads a jobs JSON file (list of {"dir", "args", "log", "done_check"}) and runs
 up to --workers subprocesses concurrently. A job whose done_check file already
@@ -70,7 +70,7 @@ def main():
                 log_path = os.path.join(job['dir'], job['log'])
                 os.makedirs(os.path.dirname(log_path), exist_ok=True)
                 logf = open(log_path, 'w')
-                script = job.get('script', 'revision_run.py')
+                script = job.get('script', 'run_experiment.py')
                 p = subprocess.Popen([PYTHON, script] + job['args'],
                                      cwd=job['dir'], stdout=logf, stderr=subprocess.STDOUT,
                                      env=env)

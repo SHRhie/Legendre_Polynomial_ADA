@@ -55,7 +55,7 @@ EXPECTED_SHA = {
 
 def load_runs(exp):
     rows = []
-    for p in sorted(glob.glob(os.path.join(HELM, "results", "revision", exp, "run_*.json"))):
+    for p in sorted(glob.glob(os.path.join(HELM, "results", "runs", exp, "run_*.json"))):
         with open(p) as f:
             r = json.load(f)
         r["_path"] = p

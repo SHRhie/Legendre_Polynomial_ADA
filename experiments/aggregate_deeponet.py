@@ -18,7 +18,8 @@ from agg_common import RESULTS, fmt_sci, mean_std
 from plot_style import apply_style, savefig
 import matplotlib.pyplot as plt
 
-DODIR = '/Users/shr/Desktop/LPA/DeepONet/results/revision/deeponet_rev'
+DODIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                     'DeepONet', 'results', 'runs', 'deeponet_rev')
 OUT = os.path.join(RESULTS, 'deeponet_rev')
 os.makedirs(OUT, exist_ok=True)
 

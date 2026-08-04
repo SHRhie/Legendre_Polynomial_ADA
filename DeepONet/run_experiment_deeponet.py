@@ -1,4 +1,4 @@
-"""Revision runner for the PI-DeepONet Kovasznay experiments (Section 4).
+"""Unified-protocol runner for the PI-DeepONet Kovasznay experiments (Section 4).
 
 One (architecture, model, trial) training per process, following the published
 protocol (Variant B, Adam-only, EPOCHS steps at LR, PDE_WEIGHT*pde + bc), with:
@@ -12,7 +12,7 @@ protocol (Variant B, Adam-only, EPOCHS steps at LR, PDE_WEIGHT*pde + bc), with:
   - weights archived per run.
 
 Usage:
-  python revision_run_deeponet.py --nn 16 --lpa --trial 0 --exp deeponet_rev
+  python run_experiment_deeponet.py --nn 16 --lpa --trial 0 --exp deeponet_rev
 """
 import os
 import argparse
@@ -60,8 +60,8 @@ def main():
 
     key_id = ('LPA_K%d_N%d' % (args.order, args.panels)) if args.lpa else 'VAN'
     stem = '%s_%s_%s_%s' % (args.nh, args.nn, key_id, args.trial)
-    out_dir = os.path.join('./results/revision', args.exp)
-    ckpt_dir = os.path.join('./checkpoints/revision', args.exp, stem)
+    out_dir = os.path.join('./results/runs', args.exp)
+    ckpt_dir = os.path.join('./checkpoints/runs', args.exp, stem)
     os.makedirs(out_dir, exist_ok=True)
     os.makedirs(ckpt_dir, exist_ok=True)
 

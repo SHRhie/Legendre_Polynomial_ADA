@@ -40,7 +40,7 @@ def run(trial, condition):
     DTYPE = 'float32'
     # Set number of data points
     N_b = 200
-    N_r = 10000  # unified with main_run_LPA.py (was 5000; see revision_run.py --nr)
+    N_r = 10000  # unified with main_run_LPA.py (was 5000; see run_experiment.py --nr)
 
     #Model construction
     lb = tf.constant([xmin, ymin], dtype=DTYPE)
