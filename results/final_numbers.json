@@ -1,10 +1,10 @@
 {
  "meta": {
-  "generated_at": "2026-08-04T17:23:54+09:00",
+  "generated_at": "2026-08-04T18:03:57+09:00",
   "git_commit": null,
   "protocol": "unified-v3",
-  "n_records": 397,
-  "notes": "Two protocols: 'unified-v3' = revision campaigns (seed statistics from the CSVs under results/); 'original-submission' = the single values printed in manuscript_mlst.docx, kept for correction diffs. Aggregation rule for unified-v3 records: mean, sample SD (ddof=1), median and the full per-seed list over all seeded runs of the cell; no run is excluded and no best run is selected. frac_below_0p1 is a descriptive fraction, not a pre-specified success criterion. Figure representative seeds follow a separate pre-specified rule (final rel-L2 closest to the cell median; recorded in results/manuscript_revisions/representative_seeds.json). Values are stored unrounded. Timing records are descriptive (n = 1-2 per depth, include periodic accuracy evaluations)."
+  "n_records": 407,
+  "notes": "Two protocols: 'unified-v3' = revision campaigns (seed statistics from the CSVs under results/); 'original-submission' = the single values printed in manuscript_mlst.docx, kept for correction diffs. Aggregation rule for unified-v3 records: mean, sample SD (ddof=1), median and the full per-seed list over all seeded runs of the cell; no run is excluded and no best run is selected. frac_below_0p1 is a descriptive fraction, not a pre-specified success criterion. Figure representative seeds follow a separate pre-specified rule (final rel-L2 closest to the cell median; recorded in results/manuscript_revisions/representative_seeds.json). Values are stored unrounded. Timing records are descriptive (n = 1-2 per depth, include periodic accuracy evaluations). Records whose id ends in '|low_order_converged' are a post-hoc subset: residual norms of only those seeds whose relative L2 fell below 0.1, with n_conv and n_total stated; they are derived from the same runs as the unconditioned records and involve no re-runs. frac_below_0p1 is reported only for error metrics."
  },
  "records": [
   {
@@ -6665,7 +6665,7 @@
     15.6151121667943,
     6.029486600994303
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|lpa_P1|rms_dxx_residual|low_order",
@@ -6705,7 +6705,7 @@
     6692.640622355275,
     3595.877813552624
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|lpa_P2|rel_l2|low_order",
@@ -6825,7 +6825,7 @@
     2.7336153010467052,
     1.6768667266789476
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|lpa_P2|rms_dxx_residual|low_order",
@@ -6865,7 +6865,7 @@
     1690.752070085972,
     1465.654354716691
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|lpa_P3|rel_l2|low_order",
@@ -6985,7 +6985,7 @@
     3.7444833072336623,
     3.07507176664389
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|lpa_P3|rms_dxx_residual|low_order",
@@ -7025,7 +7025,7 @@
     2565.235954059587,
     2125.2909874297216
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|lpa_P4|rel_l2|low_order",
@@ -7145,7 +7145,7 @@
     2.1180485033914977,
     2.531824682484819
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|lpa_P4|rms_dxx_residual|low_order",
@@ -7185,7 +7185,7 @@
     1580.6765857537082,
     2680.2918276281034
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|lpa_P6|rel_l2|low_order",
@@ -7320,7 +7320,7 @@
     1.697815168502567,
     0.324993255492525
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|lpa_P6|rms_dxx_residual|low_order",
@@ -7365,7 +7365,409 @@
     1341.2337429117267,
     460.3005768992148
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
+  },
+  {
+   "id": "helmholtz2d|L2N10|lpa_P1|rms_residual|low_order_converged",
+   "benchmark": "helmholtz2d",
+   "protocol": "unified-v3",
+   "arch": {
+    "layers": 2,
+    "neurons": 10
+   },
+   "model": "lpa",
+   "hyperparams": {
+    "P": 1,
+    "N_panel": 30,
+    "lr_warmup": 0.01
+   },
+   "metric": "rms_residual",
+   "component": null,
+   "n_params": 181,
+   "source_file": "results/low_order/runs.csv",
+   "script": "revision/build_final_numbers.py",
+   "appears_in": [
+    "low-order section"
+   ],
+   "reviewer_ref": [
+    "R1-Major3",
+    "R2-Comment3"
+   ],
+   "n_seeds": 0,
+   "mean": null,
+   "sd": null,
+   "median": null,
+   "per_seed": [],
+   "frac_below_0p1": null,
+   "n_conv": 0,
+   "n_total": 5,
+   "condition": "rel_l2 < 0.1",
+   "notes": "conditioned on rel_l2 < 0.1; post-hoc subset, n_conv stated"
+  },
+  {
+   "id": "helmholtz2d|L2N10|lpa_P1|rms_dxx_residual|low_order_converged",
+   "benchmark": "helmholtz2d",
+   "protocol": "unified-v3",
+   "arch": {
+    "layers": 2,
+    "neurons": 10
+   },
+   "model": "lpa",
+   "hyperparams": {
+    "P": 1,
+    "N_panel": 30,
+    "lr_warmup": 0.01
+   },
+   "metric": "rms_dxx_residual",
+   "component": null,
+   "n_params": 181,
+   "source_file": "results/low_order/runs.csv",
+   "script": "revision/build_final_numbers.py",
+   "appears_in": [
+    "low-order section"
+   ],
+   "reviewer_ref": [
+    "R1-Major3",
+    "R2-Comment3"
+   ],
+   "n_seeds": 0,
+   "mean": null,
+   "sd": null,
+   "median": null,
+   "per_seed": [],
+   "frac_below_0p1": null,
+   "n_conv": 0,
+   "n_total": 5,
+   "condition": "rel_l2 < 0.1",
+   "notes": "conditioned on rel_l2 < 0.1; post-hoc subset, n_conv stated"
+  },
+  {
+   "id": "helmholtz2d|L2N10|lpa_P2|rms_residual|low_order_converged",
+   "benchmark": "helmholtz2d",
+   "protocol": "unified-v3",
+   "arch": {
+    "layers": 2,
+    "neurons": 10
+   },
+   "model": "lpa",
+   "hyperparams": {
+    "P": 2,
+    "N_panel": 30,
+    "lr_warmup": 0.01
+   },
+   "metric": "rms_residual",
+   "component": null,
+   "n_params": 181,
+   "source_file": "results/low_order/runs.csv",
+   "script": "revision/build_final_numbers.py",
+   "appears_in": [
+    "low-order section"
+   ],
+   "reviewer_ref": [
+    "R1-Major3",
+    "R2-Comment3"
+   ],
+   "n_seeds": 3,
+   "mean": 1.809460263664313,
+   "sd": 0.2458137306038823,
+   "median": 1.6768667266789476,
+   "per_seed": [
+    2.0931014721955687,
+    1.6584125921184223,
+    1.6768667266789476
+   ],
+   "frac_below_0p1": null,
+   "n_conv": 3,
+   "n_total": 5,
+   "condition": "rel_l2 < 0.1",
+   "notes": "conditioned on rel_l2 < 0.1; post-hoc subset, n_conv stated"
+  },
+  {
+   "id": "helmholtz2d|L2N10|lpa_P2|rms_dxx_residual|low_order_converged",
+   "benchmark": "helmholtz2d",
+   "protocol": "unified-v3",
+   "arch": {
+    "layers": 2,
+    "neurons": 10
+   },
+   "model": "lpa",
+   "hyperparams": {
+    "P": 2,
+    "N_panel": 30,
+    "lr_warmup": 0.01
+   },
+   "metric": "rms_dxx_residual",
+   "component": null,
+   "n_params": 181,
+   "source_file": "results/low_order/runs.csv",
+   "script": "revision/build_final_numbers.py",
+   "appears_in": [
+    "low-order section"
+   ],
+   "reviewer_ref": [
+    "R1-Major3",
+    "R2-Comment3"
+   ],
+   "n_seeds": 3,
+   "mean": 1504.4529078361663,
+   "sd": 45.194461413497436,
+   "median": 1493.6273014460469,
+   "per_seed": [
+    1493.6273014460469,
+    1554.0770673457607,
+    1465.654354716691
+   ],
+   "frac_below_0p1": null,
+   "n_conv": 3,
+   "n_total": 5,
+   "condition": "rel_l2 < 0.1",
+   "notes": "conditioned on rel_l2 < 0.1; post-hoc subset, n_conv stated"
+  },
+  {
+   "id": "helmholtz2d|L2N10|lpa_P3|rms_residual|low_order_converged",
+   "benchmark": "helmholtz2d",
+   "protocol": "unified-v3",
+   "arch": {
+    "layers": 2,
+    "neurons": 10
+   },
+   "model": "lpa",
+   "hyperparams": {
+    "P": 3,
+    "N_panel": 30,
+    "lr_warmup": 0.01
+   },
+   "metric": "rms_residual",
+   "component": null,
+   "n_params": 181,
+   "source_file": "results/low_order/runs.csv",
+   "script": "revision/build_final_numbers.py",
+   "appears_in": [
+    "low-order section"
+   ],
+   "reviewer_ref": [
+    "R1-Major3",
+    "R2-Comment3"
+   ],
+   "n_seeds": 1,
+   "mean": 3.07507176664389,
+   "sd": null,
+   "median": 3.07507176664389,
+   "per_seed": [
+    3.07507176664389
+   ],
+   "frac_below_0p1": null,
+   "n_conv": 1,
+   "n_total": 5,
+   "condition": "rel_l2 < 0.1",
+   "notes": "conditioned on rel_l2 < 0.1; post-hoc subset, n_conv stated"
+  },
+  {
+   "id": "helmholtz2d|L2N10|lpa_P3|rms_dxx_residual|low_order_converged",
+   "benchmark": "helmholtz2d",
+   "protocol": "unified-v3",
+   "arch": {
+    "layers": 2,
+    "neurons": 10
+   },
+   "model": "lpa",
+   "hyperparams": {
+    "P": 3,
+    "N_panel": 30,
+    "lr_warmup": 0.01
+   },
+   "metric": "rms_dxx_residual",
+   "component": null,
+   "n_params": 181,
+   "source_file": "results/low_order/runs.csv",
+   "script": "revision/build_final_numbers.py",
+   "appears_in": [
+    "low-order section"
+   ],
+   "reviewer_ref": [
+    "R1-Major3",
+    "R2-Comment3"
+   ],
+   "n_seeds": 1,
+   "mean": 2125.2909874297216,
+   "sd": null,
+   "median": 2125.2909874297216,
+   "per_seed": [
+    2125.2909874297216
+   ],
+   "frac_below_0p1": null,
+   "n_conv": 1,
+   "n_total": 5,
+   "condition": "rel_l2 < 0.1",
+   "notes": "conditioned on rel_l2 < 0.1; post-hoc subset, n_conv stated"
+  },
+  {
+   "id": "helmholtz2d|L2N10|lpa_P4|rms_residual|low_order_converged",
+   "benchmark": "helmholtz2d",
+   "protocol": "unified-v3",
+   "arch": {
+    "layers": 2,
+    "neurons": 10
+   },
+   "model": "lpa",
+   "hyperparams": {
+    "P": 4,
+    "N_panel": 30,
+    "lr_warmup": 0.01
+   },
+   "metric": "rms_residual",
+   "component": null,
+   "n_params": 181,
+   "source_file": "results/low_order/runs.csv",
+   "script": "revision/build_final_numbers.py",
+   "appears_in": [
+    "low-order section"
+   ],
+   "reviewer_ref": [
+    "R1-Major3",
+    "R2-Comment3"
+   ],
+   "n_seeds": 3,
+   "mean": 1.925083754121,
+   "sd": 0.34551380027768824,
+   "median": 2.1180485033914977,
+   "per_seed": [
+    1.5261890114573242,
+    2.131013747514178,
+    2.1180485033914977
+   ],
+   "frac_below_0p1": null,
+   "n_conv": 3,
+   "n_total": 5,
+   "condition": "rel_l2 < 0.1",
+   "notes": "conditioned on rel_l2 < 0.1; post-hoc subset, n_conv stated"
+  },
+  {
+   "id": "helmholtz2d|L2N10|lpa_P4|rms_dxx_residual|low_order_converged",
+   "benchmark": "helmholtz2d",
+   "protocol": "unified-v3",
+   "arch": {
+    "layers": 2,
+    "neurons": 10
+   },
+   "model": "lpa",
+   "hyperparams": {
+    "P": 4,
+    "N_panel": 30,
+    "lr_warmup": 0.01
+   },
+   "metric": "rms_dxx_residual",
+   "component": null,
+   "n_params": 181,
+   "source_file": "results/low_order/runs.csv",
+   "script": "revision/build_final_numbers.py",
+   "appears_in": [
+    "low-order section"
+   ],
+   "reviewer_ref": [
+    "R1-Major3",
+    "R2-Comment3"
+   ],
+   "n_seeds": 3,
+   "mean": 1434.8749783372593,
+   "sd": 263.99216424209425,
+   "median": 1580.6765857537082,
+   "per_seed": [
+    1130.1374190502231,
+    1593.8109302078462,
+    1580.6765857537082
+   ],
+   "frac_below_0p1": null,
+   "n_conv": 3,
+   "n_total": 5,
+   "condition": "rel_l2 < 0.1",
+   "notes": "conditioned on rel_l2 < 0.1; post-hoc subset, n_conv stated"
+  },
+  {
+   "id": "helmholtz2d|L2N10|lpa_P6|rms_residual|low_order_converged",
+   "benchmark": "helmholtz2d",
+   "protocol": "unified-v3",
+   "arch": {
+    "layers": 2,
+    "neurons": 10
+   },
+   "model": "lpa",
+   "hyperparams": {
+    "P": 6,
+    "N_panel": 30,
+    "lr_warmup": 0.01
+   },
+   "metric": "rms_residual",
+   "component": null,
+   "n_params": 181,
+   "source_file": "results/low_order/runs.csv",
+   "script": "revision/build_final_numbers.py",
+   "appears_in": [
+    "low-order section"
+   ],
+   "reviewer_ref": [
+    "R1-Major3",
+    "R2-Comment3"
+   ],
+   "n_seeds": 5,
+   "mean": 0.851659559721232,
+   "sd": 0.5484066301815318,
+   "median": 0.5898368184522371,
+   "per_seed": [
+    0.5898368184522371,
+    1.0868610804446843,
+    0.5587914757141463,
+    1.697815168502567,
+    0.324993255492525
+   ],
+   "frac_below_0p1": null,
+   "n_conv": 5,
+   "n_total": 10,
+   "condition": "rel_l2 < 0.1",
+   "notes": "conditioned on rel_l2 < 0.1; post-hoc subset, n_conv stated"
+  },
+  {
+   "id": "helmholtz2d|L2N10|lpa_P6|rms_dxx_residual|low_order_converged",
+   "benchmark": "helmholtz2d",
+   "protocol": "unified-v3",
+   "arch": {
+    "layers": 2,
+    "neurons": 10
+   },
+   "model": "lpa",
+   "hyperparams": {
+    "P": 6,
+    "N_panel": 30,
+    "lr_warmup": 0.01
+   },
+   "metric": "rms_dxx_residual",
+   "component": null,
+   "n_params": 181,
+   "source_file": "results/low_order/runs.csv",
+   "script": "revision/build_final_numbers.py",
+   "appears_in": [
+    "low-order section"
+   ],
+   "reviewer_ref": [
+    "R1-Major3",
+    "R2-Comment3"
+   ],
+   "n_seeds": 5,
+   "mean": 807.4388974365941,
+   "sd": 384.34588900199907,
+   "median": 649.7772605141319,
+   "per_seed": [
+    649.7772605141319,
+    1075.9322266063043,
+    509.95068025159304,
+    1341.2337429117267,
+    460.3005768992148
+   ],
+   "frac_below_0p1": null,
+   "n_conv": 5,
+   "n_total": 10,
+   "condition": "rel_l2 < 0.1",
+   "notes": "conditioned on rel_l2 < 0.1; post-hoc subset, n_conv stated"
   },
   {
    "id": "helmholtz2d|L2N10|lpa_P1_N105|rel_l2|dof_fixed",
@@ -8648,7 +9050,7 @@
     20647.0,
     22725.0
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L3N10|FF_ORACLE|rel_l2|major1_confirm",
@@ -8738,7 +9140,7 @@
     2196.0,
     1320.0
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L3N10|LPA|rel_l2|major1_confirm",
@@ -8828,7 +9230,7 @@
     3888.0,
     5277.0
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L3N10|NLAAF|rel_l2|major1_confirm",
@@ -8918,7 +9320,7 @@
     2092.0,
     8293.0
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L3N10|SIREN|rel_l2|major1_confirm",
@@ -9008,7 +9410,7 @@
     7524.0,
     3578.0
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L3N10|TANH|rel_l2|major1_confirm",
@@ -9098,7 +9500,7 @@
     12568.0,
     8450.0
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L3N10|TFF|rel_l2|major1_confirm",
@@ -9188,7 +9590,7 @@
     17347.0,
     2610.0
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L3N10|LPA-TANH|paired_log10_diff|major1",
@@ -12249,7 +12651,7 @@
     7.7277681989693825,
     8.086617865258056
    ],
-   "frac_below_0p1": 0.0,
+   "frac_below_0p1": null,
    "notes": "single dedicated worker; includes periodic accuracy evaluations; descriptive only, n = 1-2 per depth"
   },
   {
@@ -12282,7 +12684,7 @@
     30.679239749908447,
     84.49707007408142
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|LPA_P6_N30|per_iteration_ms|timing",
@@ -12314,7 +12716,7 @@
     19.56851164219141,
     16.17034760108265
    ],
-   "frac_below_0p1": 0.0,
+   "frac_below_0p1": null,
    "notes": "single dedicated worker; includes periodic accuracy evaluations; descriptive only, n = 1-2 per depth"
   },
   {
@@ -12347,7 +12749,7 @@
     121.8531219959259,
     98.81699419021606
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|R1|per_iteration_ms|timing",
@@ -12379,7 +12781,7 @@
     8.660416761206482,
     8.241570959577782
    ],
-   "frac_below_0p1": 0.0,
+   "frac_below_0p1": null,
    "notes": "single dedicated worker; includes periodic accuracy evaluations; descriptive only, n = 1-2 per depth"
   },
   {
@@ -12412,7 +12814,7 @@
     31.601860761642456,
     89.00072479248047
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|R|per_iteration_ms|timing",
@@ -12444,7 +12846,7 @@
     9.141204708555996,
     6.652752526254084
    ],
-   "frac_below_0p1": 0.0,
+   "frac_below_0p1": null,
    "notes": "single dedicated worker; includes periodic accuracy evaluations; descriptive only, n = 1-2 per depth"
   },
   {
@@ -12477,7 +12879,7 @@
     108.28671097755432,
     98.7135419845581
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L3N10|LPA_P6_N30|per_iteration_ms|timing",
@@ -12508,7 +12910,7 @@
    "per_seed": [
     18.39895864516581
    ],
-   "frac_below_0p1": 0.0,
+   "frac_below_0p1": null,
    "notes": "single dedicated worker; includes periodic accuracy evaluations; descriptive only, n = 1-2 per depth"
   },
   {
@@ -12540,7 +12942,7 @@
    "per_seed": [
     71.6271460056305
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L3N10|R1|per_iteration_ms|timing",
@@ -12571,7 +12973,7 @@
    "per_seed": [
     7.979673996181959
    ],
-   "frac_below_0p1": 0.0,
+   "frac_below_0p1": null,
    "notes": "single dedicated worker; includes periodic accuracy evaluations; descriptive only, n = 1-2 per depth"
   },
   {
@@ -12603,7 +13005,7 @@
    "per_seed": [
     81.06550812721252
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L4N10|LPA_P6_N30|per_iteration_ms|timing",
@@ -12634,7 +13036,7 @@
    "per_seed": [
     19.686339688055295
    ],
-   "frac_below_0p1": 0.0,
+   "frac_below_0p1": null,
    "notes": "single dedicated worker; includes periodic accuracy evaluations; descriptive only, n = 1-2 per depth"
   },
   {
@@ -12666,7 +13068,7 @@
    "per_seed": [
     152.76599597930908
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L4N10|R1|per_iteration_ms|timing",
@@ -12697,7 +13099,7 @@
    "per_seed": [
     10.503837403879599
    ],
-   "frac_below_0p1": 0.0,
+   "frac_below_0p1": null,
    "notes": "single dedicated worker; includes periodic accuracy evaluations; descriptive only, n = 1-2 per depth"
   },
   {
@@ -12729,7 +13131,7 @@
    "per_seed": [
     127.00189805030823
    ],
-   "frac_below_0p1": 0.0
+   "frac_below_0p1": null
   },
   {
    "id": "helmholtz2d|L2N10|baseline_tanh|abs_l1|original",

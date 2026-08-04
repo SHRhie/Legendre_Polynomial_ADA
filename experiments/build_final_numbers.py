@@ -69,7 +69,8 @@ def stats(values):
 
 def add(rec_id, benchmark, protocol, model, metric, values=None, *, arch_=None,
         hyperparams=None, component=None, n_params=None, source_file=None,
-        script=None, appears_in=None, reviewer_ref=None, scalar=None, notes=None):
+        script=None, appears_in=None, reviewer_ref=None, scalar=None, notes=None,
+        extra=None, allow_empty=False):
     rec = {
         "id": rec_id,
         "benchmark": benchmark,
@@ -88,11 +89,19 @@ def add(rec_id, benchmark, protocol, model, metric, values=None, *, arch_=None,
     if values is not None:
         s = stats(values)
         if s is None:
-            return
+            if not allow_empty:
+                return
+            s = {"n_seeds": 0, "mean": None, "sd": None, "median": None,
+                 "per_seed": [], "frac_below_0p1": None}
         rec.update(s)
+        if metric not in ("rel_l2", "abs_l1"):
+            # the fraction below 0.1 only means something for an error metric
+            rec["frac_below_0p1"] = None
     if scalar is not None:
         rec.update({"n_seeds": None, "mean": None, "sd": None, "median": None,
                     "per_seed": [], "frac_below_0p1": None, "value": scalar})
+    if extra:
+        rec.update(extra)
     if notes:
         rec["notes"] = notes
     records.append(rec)
@@ -152,6 +161,45 @@ def low_order():
                 script="revision/aggregate_task2.py",
                 appears_in=["low-order section"],
                 reviewer_ref=["R2-Comment2", "R2-Comment3", "R1-Major3"])
+
+
+def low_order_converged():
+    """Residual norms restricted to the seeds that converged (rel_l2 < 0.1).
+
+    Pure post-hoc selection over the runs already loaded by low_order(): the
+    per-seed arrays of rel_l2, rms_residual and rms_dxx_residual come from the
+    same grouped frame in the same row order, so selecting on the error index
+    selects the matching residual entries. No re-runs are involved.
+
+    Cross-checked against the published per-seed arrays (identical means), and
+    against P = 1, which has no converged seed and is still emitted with
+    n_conv = 0 so the absence is explicit rather than a missing record.
+    """
+    src = f"{RES}/low_order/runs.csv"
+    df = pd.read_csv(src)
+    cols = ["l2_relative", "rms_r", "rms_r_xx"]
+    assert not df[cols].isna().any().any(), (
+        "NaN in the low-order metrics would break index alignment between the "
+        "error array and the residual arrays")
+    for (P,), g in df.groupby(["P"]):
+        row = g.iloc[0]
+        conv = g[g["l2_relative"] < 0.1]
+        n_conv = int(len(conv))
+        for col, metric in (("rms_r", "rms_residual"), ("rms_r_xx", "rms_dxx_residual")):
+            add(f"helmholtz2d|L2N10|lpa_P{int(P)}|{metric}|low_order_converged",
+                "helmholtz2d", "unified-v3", "lpa", metric,
+                values=conv[col].tolist(), arch_=arch(2, 10),
+                hyperparams={"P": int(P), "N_panel": int(row["lpa_panels"]),
+                             "lr_warmup": float(row["lr"])},
+                n_params=row.get("n_params"),
+                source_file=os.path.relpath(src, ROOT),
+                script="revision/build_final_numbers.py",
+                appears_in=["low-order section"],
+                reviewer_ref=["R1-Major3", "R2-Comment3"],
+                extra={"n_conv": n_conv, "n_total": int(len(g)),
+                       "condition": "rel_l2 < 0.1"},
+                notes="conditioned on rel_l2 < 0.1; post-hoc subset, n_conv stated",
+                allow_empty=True)
 
 
 def dof_fixed():
@@ -446,7 +494,7 @@ def main():
                     help="ISO timestamp; defaults to the current time")
     args = ap.parse_args()
 
-    ff_baseline(); low_order(); dof_fixed(); sensitivity()
+    ff_baseline(); low_order(); low_order_converged(); dof_fixed(); sensitivity()
     major1(); deeponet(); timing_single(); original_submission()
 
     if args.generated_at:
