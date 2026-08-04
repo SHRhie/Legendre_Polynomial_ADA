@@ -1,4 +1,4 @@
-"""Shared matplotlib style for all revision figures.
+"""Shared matplotlib style for all figures.
 
 Conventions (fixed by the paper):
   Times New Roman, mathtext.stix, font.size=14, figure.dpi=400,

@@ -1,14 +1,11 @@
-"""Revision experiment runner for the 2D Helmholtz benchmark.
+"""Unified-protocol experiment runner for the Kovasznay flow benchmark (Re=40).
 
 Runs a single (model config, trial) training following the paper protocol
 (Adam 200 steps @ lr, then L-BFGS-B) and stores per-run artifacts under
-./results/revision/<exp>/ :
-  - acc_hist / loss_hist / cal_time txt files (same format as main_run_*.py)
-  - run_*.json with full config + final metrics (+ residual derivative norms)
+./results/runs/<exp>/ (same layout as the Helmholtz unified-protocol runner).
 
 Usage example:
-  python revision_run.py --key FF --sigma 5 --nh 2 --nn 10 --trial 0 --exp ff_baseline
-  python revision_run.py --key LPA --order 6 --panels 30 --nh 2 --nn 10 --trial 3 --exp ff_baseline
+  python run_experiment.py --key FF --sigma 5 --nh 2 --nn 10 --trial 0 --exp ff_baseline
 """
 import os
 CPU_ONLY = True
@@ -27,9 +24,6 @@ from time import time
 from pinn_utils import *
 
 SEED = 1234
-SANITY_POINTS = 2048
-RESID_POINTS = 4096
-RESID_SEED = 777
 
 # paper-default LPA configuration for this benchmark (used for FF param matching)
 LPA_ORDER_DEFAULT = 6
@@ -40,15 +34,14 @@ def count_params(model):
     return int(np.sum([np.prod(v.shape) for v in model.trainable_weights]))
 
 
-def ff_params_analytic(m, nh, nn, n_out=1, in_dim=2):
-    # gamma(x) has 2m features -> Dense(nn) x nh -> Dense(n_out)
+def ff_params_analytic(m, nh, nn, n_out=3, in_dim=2):
     p = (2*m)*nn + nn
     p += (nh-1)*(nn*nn + nn)
     p += nn*n_out + n_out
     return p
 
 
-def match_ff_features(lpa_params, nh, nn, n_out=1):
+def match_ff_features(lpa_params, nh, nn, n_out=3):
     # ties go to the larger m (slightly favors the FF baseline)
     best_m, best_diff = 1, float('inf')
     for m in range(1, 65):
@@ -60,7 +53,7 @@ def match_ff_features(lpa_params, nh, nn, n_out=1):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--key', default='LPA', choices=['R', 'R1', 'LPA', 'FF'])
+    ap.add_argument('--key', default='LPA', choices=['R', 'LPA', 'FF'])
     ap.add_argument('--sigma', type=float, default=1.0, help='FF sigma')
     ap.add_argument('--ff-features', type=int, default=0, help='FF frequencies m; 0 = match LPA params')
     ap.add_argument('--order', type=int, default=LPA_ORDER_DEFAULT)
@@ -69,10 +62,11 @@ def main():
     ap.add_argument('--nh', type=int, default=2)
     ap.add_argument('--nn', type=int, default=10)
     ap.add_argument('--trial', type=int, default=0)
+    ap.add_argument('--nr', type=int, default=5000,
+                    help='collocation points (main_run_R.py: 5000, main_run_LPA.py: 10000)')
     ap.add_argument('--adam-steps', type=int, default=200)
     ap.add_argument('--lbfgs-maxiter', type=int, default=40000)
-    ap.add_argument('--exp', default='revision')
-    ap.add_argument('--acc-every', type=int, default=50)
+    ap.add_argument('--exp', default='default')
     args = ap.parse_args()
 
     tf.keras.utils.disable_interactive_logging()
@@ -80,19 +74,18 @@ def main():
     trial_seed = SEED + args.trial
     set_global_seed(trial_seed)
 
-    # Material Properties
-    xmin, xmax = 0.0, 1.0
-    ymin, ymax = 0.0, 1.0
+    # Material Properties (identical to main_run_R.py)
+    xmin, xmax = -0.5, 1.0
+    ymin, ymax = -0.5, 1.5
     properties = {'xmin': xmin, 'xmax': xmax, 'ymin': ymin, 'ymax': ymax}
     DTYPE = 'float32'
     N_b = 200
-    N_r = 10000
+    N_r = args.nr
     lb = tf.constant([xmin, ymin], dtype=DTYPE)
     ub = tf.constant([xmax, ymax], dtype=DTYPE)
 
-    # key_id used in file names distinguishes hyperparameter variants
-    if args.key in ('R', 'R1'):
-        key_id = args.key
+    if args.key == 'R':
+        key_id = 'R'
     elif args.key == 'LPA':
         key_id = 'LPA_P%d_N%d' % (args.order, args.panels)
         if abs(args.lr - 1e-2) > 1e-12:
@@ -109,7 +102,7 @@ def main():
                          lpa_order=LPA_ORDER_DEFAULT, lpa_panels=LPA_PANELS_DEFAULT)
         lpa_ref_params = count_params(ref.model)
         if ff_features == 0:
-            ff_features = match_ff_features(lpa_ref_params, args.nh, args.nn, n_out=1)
+            ff_features = match_ff_features(lpa_ref_params, args.nh, args.nn, n_out=3)
         else:
             key_id += '_m%d' % ff_features
         del ref
@@ -123,7 +116,6 @@ def main():
         'adam_steps': args.adam_steps, 'adam_lr': args.lr,
         'lbfgs_maxiter': args.lbfgs_maxiter,
     })
-    residual_sanity_check(lb.numpy(), ub.numpy(), num_points=SANITY_POINTS, dtype=DTYPE, seed=trial_seed)
 
     pinn = Build_PINN(lb, ub, properties, args.nh, args.nn, args.key,
                       lpa_order=args.order, lpa_panels=args.panels,
@@ -133,7 +125,6 @@ def main():
     print('Trainable parameters: %d (LPA reference: %s)' % (n_params, lpa_ref_params))
 
     solver = Solver_PINN(pinn, properties, N_b=N_b, N_r=N_r, lr=args.lr)
-    solver.plot_every = args.acc_every
 
     ref_time = time()
     solver.train_adam(args.adam_steps)
@@ -156,22 +147,19 @@ def main():
     # ---- final metrics -------------------------------------------------
     solver.accuracy_update()
     prediction = solver.cur_pinn.model.predict(solver.XY_test)
-    exact = solution(solver.XY_test).numpy()
-    l1_legacy = float(np.mean(np.abs(prediction - exact)))
-    l2_legacy = float(np.linalg.norm(prediction - exact, 2) / np.linalg.norm(exact, 2))
-    # unified metrics: channel 0 (and channel-sum for multi-output heads)
-    pred_c0 = prediction[:, 0:1]
-    l1_c0 = float(np.mean(np.abs(pred_c0 - exact)))
-    l2_c0 = float(np.linalg.norm((pred_c0 - exact).ravel()) / np.linalg.norm(exact.ravel()))
-    pred_sum = prediction.sum(axis=1, keepdims=True)
-    l2_sum = float(np.linalg.norm((pred_sum - exact).ravel()) / np.linalg.norm(exact.ravel()))
-
-    res_norms = residual_derivative_norms(solver.cur_pinn.model, lb.numpy(), ub.numpy(),
-                                          num_points=RESID_POINTS, seed=RESID_SEED)
-    print('Residual derivative norms:', json.dumps(res_norms, indent=2))
+    u_pred, v_pred, p_pred = prediction[:, 0], prediction[:, 1], prediction[:, 2]
+    u, v, p = list(map(lambda x: x.numpy().reshape(-1), solution(solver.XY_test)))
+    metrics = {
+        'l1_absolute_u': float(np.mean(np.abs(u_pred-u))),
+        'l2_relative_u': float(np.linalg.norm(u_pred-u, 2)/np.linalg.norm(u, 2)),
+        'l1_absolute_v': float(np.mean(np.abs(v_pred-v))),
+        'l2_relative_v': float(np.linalg.norm(v_pred-v, 2)/np.linalg.norm(v, 2)),
+        'l1_absolute_p': float(np.mean(np.abs(p_pred-p))),
+        'l2_relative_p': float(np.linalg.norm(p_pred-p, 2)/np.linalg.norm(p, 2)),
+    }
 
     # ---- save ----------------------------------------------------------
-    out_dir = './results/revision/%s/' % args.exp
+    out_dir = './results/runs/%s/' % args.exp
     os.makedirs(out_dir, exist_ok=True)
     stem = '%s_%s_%s_%s' % (args.nh, args.nn, key_id, args.trial)
     np.savetxt(out_dir + 'loss_hist_%s.txt' % stem, np.array(solver.loss_history), delimiter=',')
@@ -179,7 +167,7 @@ def main():
     np.savetxt(out_dir + 'cal_time_%s.txt' % stem, np.array((time1, time2)), delimiter=',')
 
     record = {
-        'benchmark': 'helmholtz2d',
+        'benchmark': 'kovasznay',
         'key': args.key, 'key_id': key_id,
         'nh': args.nh, 'nn': args.nn, 'trial': args.trial, 'seed': trial_seed,
         'lpa_order': args.order if args.key == 'LPA' else None,
@@ -191,18 +179,17 @@ def main():
         'N_b': N_b, 'N_r': N_r,
         'domain': [[xmin, xmax], [ymin, ymax]],
         'n_params': n_params, 'lpa_ref_params': lpa_ref_params,
-        'l1_absolute': l1_legacy, 'l2_relative': l2_legacy,
-        'l1_absolute_c0': l1_c0, 'l2_relative_c0': l2_c0, 'l2_relative_sum': l2_sum,
         'final_loss': float(solver.loss),
         'time_adam': time1, 'time_lbfgs': time2,
         'lbfgs_steps': int(solver.lbfgs_step),
         'machine': platform.machine(),
     }
-    record.update(res_norms)
+    record.update(metrics)
     with open(out_dir + 'run_%s.json' % stem, 'w') as f:
         json.dump(record, f, indent=2)
     print('Saved %srun_%s.json' % (out_dir, stem))
-    print('FINAL l2_relative=%.6e l1_absolute=%.6e' % (l2_legacy, l1_legacy))
+    print('FINAL l2_relative_u=%.6e l2_relative_v=%.6e l2_relative_p=%.6e' %
+          (metrics['l2_relative_u'], metrics['l2_relative_v'], metrics['l2_relative_p']))
 
 
 if __name__ == '__main__':

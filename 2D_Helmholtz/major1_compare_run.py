@@ -1,6 +1,6 @@
 """Paired coordinate-PINN baselines for Referee 1, Major Comment 1.
 
-This runner is intentionally separate from ``revision_run.py``.  It keeps the
+This runner is intentionally separate from ``run_experiment.py``.  It keeps the
 Helmholtz PDE, automatic-differentiation residual, loss weights, and training
 budget common while varying only the coordinate representation/activation.
 
@@ -530,7 +530,7 @@ def main():
             model, lb_np, ub_np, num_points=args.resid_points, seed=777
         )
 
-    output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", "revision", args.exp)
+    output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", "runs", args.exp)
     os.makedirs(output_dir, exist_ok=True)
     stem = f"{args.nh}_{args.nn}_{key_id(args)}_{args.trial}"
     np.savetxt(os.path.join(output_dir, f"loss_hist_{stem}.txt"), np.asarray(solver.loss_history), delimiter=",")

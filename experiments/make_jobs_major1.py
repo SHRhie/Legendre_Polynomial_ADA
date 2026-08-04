@@ -74,8 +74,8 @@ def job(exp, extra_args, trial):
         "dir": HELM,
         "script": "major1_compare_run.py",
         "args": args,
-        "log": f"results/revision/{exp}/log_{stem}.txt",
-        "done_check": f"results/revision/{exp}/run_{stem}.json",
+        "log": f"results/runs/{exp}/log_{stem}.txt",
+        "done_check": f"results/runs/{exp}/run_{stem}.json",
     }
 
 
