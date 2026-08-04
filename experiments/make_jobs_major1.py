@@ -19,8 +19,8 @@ import json
 import os
 import sys
 
-import os as _os
-HELM = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "2D_Helmholtz")
+from paths import bench_dir
+HELM = bench_dir("helmholtz2d")
 DEV_TRIALS = [0, 1, 2]
 CONFIRM_TRIALS = list(range(10, 20))
 LR6 = ["0.0001", "0.0003", "0.001", "0.003", "0.01", "0.03"]
@@ -74,8 +74,8 @@ def job(exp, extra_args, trial):
         "dir": HELM,
         "script": "major1_compare_run.py",
         "args": args,
-        "log": f"results/runs/{exp}/log_{stem}.txt",
-        "done_check": f"results/runs/{exp}/run_{stem}.json",
+        "log": f"results/revision/{exp}/log_{stem}.txt",
+        "done_check": f"results/revision/{exp}/run_{stem}.json",
     }
 
 

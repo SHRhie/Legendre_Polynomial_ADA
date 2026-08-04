@@ -1,4 +1,4 @@
-"""Generate job lists for the MLST unified-protocol experiment campaign.
+"""Generate job lists for the MLST revision experiment campaign.
 
 Experiments (exp tag -> reviewer task):
   ff_baseline  : Task 1  Fourier-feature baseline vs vanilla vs LPA (all benchmarks)
@@ -11,10 +11,11 @@ Run trials 0..N_TRIALS-1 (seed = 1234 + trial).
 import json
 import os
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HELM = os.path.join(ROOT, '2D_Helmholtz')
-DIFF = os.path.join(ROOT, 'Diffusion-Reaction')
-KOVA = os.path.join(ROOT, 'Kovasznay_flow')
+from paths import bench_dir
+
+HELM = bench_dir('helmholtz2d')
+DIFF = bench_dir('diffusion_reaction')
+KOVA = bench_dir('kovasznay')
 
 N_TRIALS = 5
 SIGMAS = [1, 5, 10]
@@ -30,8 +31,8 @@ def job(dir_, exp, key_id, nh, nn, trial, extra_args):
         'dir': dir_,
         'args': ['--nh', str(nh), '--nn', str(nn), '--trial', str(trial),
                  '--exp', exp] + extra_args,
-        'log': 'results/runs/%s/log_%s.txt' % (exp, stem),
-        'done_check': 'results/runs/%s/run_%s.json' % (exp, stem),
+        'log': 'results/revision/%s/log_%s.txt' % (exp, stem),
+        'done_check': 'results/revision/%s/run_%s.json' % (exp, stem),
     }
 
 

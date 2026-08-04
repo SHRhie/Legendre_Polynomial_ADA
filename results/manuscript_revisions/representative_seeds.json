@@ -1,0 +1,146 @@
+[
+  {
+    "dir": "2D Helmholtz v2",
+    "model": "R1",
+    "nh": 2,
+    "trial": 6,
+    "value": 1.6534846469530795,
+    "cell_median": 1.670266928112035
+  },
+  {
+    "dir": "2D Helmholtz v2",
+    "model": "LPA",
+    "nh": 2,
+    "trial": 8,
+    "value": 0.0784692323260475,
+    "cell_median": 0.12602427115594528
+  },
+  {
+    "dir": "Diffusion-Reaction",
+    "model": "R",
+    "nh": 2,
+    "trial": 4,
+    "value": 0.0206798624155693,
+    "cell_median": 0.0206798624155693
+  },
+  {
+    "dir": "Diffusion-Reaction",
+    "model": "LPA",
+    "nh": 2,
+    "trial": 3,
+    "value": 0.0189860629979553,
+    "cell_median": 0.0189860629979553
+  },
+  {
+    "dir": "Kovasznay flow",
+    "model": "R",
+    "nh": 2,
+    "trial": 0,
+    "value": 0.002482592633344,
+    "cell_median": 0.002482592633344
+  },
+  {
+    "dir": "Kovasznay flow",
+    "model": "LPA",
+    "nh": 2,
+    "trial": 0,
+    "value": 0.0032453212310872,
+    "cell_median": 0.0032453212310872
+  },
+  {
+    "dir": "2D Helmholtz v2",
+    "model": "R1",
+    "nh": 3,
+    "trial": 0,
+    "value": 0.2995476540048568,
+    "cell_median": 0.2995476540048568
+  },
+  {
+    "dir": "2D Helmholtz v2",
+    "model": "LPA",
+    "nh": 3,
+    "trial": 2,
+    "value": 0.0203710101674374,
+    "cell_median": 0.0203710101674374
+  },
+  {
+    "dir": "Diffusion-Reaction",
+    "model": "R",
+    "nh": 3,
+    "trial": 4,
+    "value": 0.0125752174259283,
+    "cell_median": 0.0125752174259283
+  },
+  {
+    "dir": "Diffusion-Reaction",
+    "model": "LPA",
+    "nh": 3,
+    "trial": 4,
+    "value": 0.0075578674302667,
+    "cell_median": 0.0075578674302667
+  },
+  {
+    "dir": "Kovasznay flow",
+    "model": "R",
+    "nh": 3,
+    "trial": 2,
+    "value": 0.0019111229963393,
+    "cell_median": 0.0019111229963393
+  },
+  {
+    "dir": "Kovasznay flow",
+    "model": "LPA",
+    "nh": 3,
+    "trial": 2,
+    "value": 0.0019431468691638,
+    "cell_median": 0.0019431468691638
+  },
+  {
+    "dir": "2D Helmholtz v2",
+    "model": "R1",
+    "nh": 4,
+    "trial": 2,
+    "value": 0.2863866682067692,
+    "cell_median": 0.2863866682067692
+  },
+  {
+    "dir": "2D Helmholtz v2",
+    "model": "LPA",
+    "nh": 4,
+    "trial": 3,
+    "value": 0.0228779691954569,
+    "cell_median": 0.0228779691954569
+  },
+  {
+    "dir": "Diffusion-Reaction",
+    "model": "R",
+    "nh": 4,
+    "trial": 1,
+    "value": 0.0031164435077005,
+    "cell_median": 0.0031164435077005
+  },
+  {
+    "dir": "Diffusion-Reaction",
+    "model": "LPA",
+    "nh": 4,
+    "trial": 1,
+    "value": 0.0032126001406999,
+    "cell_median": 0.0032126001406999
+  },
+  {
+    "dir": "Kovasznay flow",
+    "model": "R",
+    "nh": 4,
+    "trial": 4,
+    "value": 0.0010039206857459,
+    "cell_median": 0.0010039206857459
+  },
+  {
+    "dir": "Kovasznay flow",
+    "model": "LPA",
+    "nh": 4,
+    "trial": 4,
+    "value": 0.0011977346728417,
+    "cell_median": 0.0011977346728417
+  }
+]

@@ -19,9 +19,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from plot_style import apply_style, savefig
 import matplotlib.pyplot as plt
 
-import os as _os
-HELM = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "2D_Helmholtz")
-OUT = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "results", "major1_compare")
+from paths import RESULTS, bench_dir, runs_dir
+
+HELM = bench_dir("helmholtz2d")
+OUT = f"{RESULTS}/major1_compare"
 CLIP_LO, CLIP_HI = 1e-12, 1e3
 BOOT_SEED = 20260803
 DEV_TRIALS = {0, 1, 2}
@@ -29,8 +30,8 @@ CONFIRM_TRIALS = set(range(10, 20))
 GENERAL_MODELS = ["TANH", "LPA", "FF", "TFF", "SIREN", "NLAAF"]
 MODEL_LABELS = {
     "TANH": "tanh PINN", "LPA": "LPA (P=6, N=30)", "FF": "fixed random FF",
-    "TFF": "trainable FF", "SIREN": "SIREN", "NLAAF": "N-LAAF",
-    "FF_ORACLE": "oracle FF (ceiling)",
+    "TFF": "trainable FF", "SIREN": "SIREN", "NLAAF": "adaptive tanh",
+    "FF_ORACLE": "oracle FF (reference)",
 }
 MODEL_COLORS = {
     "TANH": "#000000", "LPA": "#d62728", "FF": "#9ecae1", "TFF": "#08519c",
@@ -55,7 +56,7 @@ EXPECTED_SHA = {
 
 def load_runs(exp):
     rows = []
-    for p in sorted(glob.glob(os.path.join(HELM, "results", "runs", exp, "run_*.json"))):
+    for p in sorted(glob.glob(os.path.join(runs_dir("helmholtz2d", exp), "run_*.json"))):
         with open(p) as f:
             r = json.load(f)
         r["_path"] = p

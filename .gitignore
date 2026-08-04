@@ -2,3 +2,8 @@
 .vscode/
 __pycache__/
 *.pyc
+results/*/report.md
+# stdout logs and per-step loss traces are archived locally, not published
+# (they can contain absolute local paths from warning tracebacks)
+**/log_*.txt
+**/loss_hist_*.txt

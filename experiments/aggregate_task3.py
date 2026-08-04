@@ -13,7 +13,7 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from agg_common import RESULTS, add_success_rate, fmt_sci, load_runs, mean_std
-from plot_style import apply_style, log_minor_labels, log_safe_yerr, savefig
+from plot_style import apply_style, log_minor_labels, log_safe_yerr, panel_label, savefig
 import matplotlib.pyplot as plt
 
 OUT = os.path.join(RESULTS, 'dof_fixed')
@@ -69,6 +69,8 @@ def main():
     ax2.set_xticks(summ['P'])
     labels = ['%d\n(N=%d)' % (p, n) for p, n in zip(summ['P'], summ['N_panel'])]
     ax2.set_xticklabels(labels, fontsize=11)
+    panel_label(ax1, 'a', loc='upper right')
+    panel_label(ax2, 'b', loc='upper right')
     savefig(fig, os.path.join(OUT, 'tradeoff.png'))
 
     # report

@@ -1,4 +1,4 @@
-"""Shared helpers for aggregating unified-protocol experiment runs."""
+"""Shared helpers for aggregating revision experiment runs."""
 import glob
 import json
 import os
@@ -6,18 +6,16 @@ import os
 import numpy as np
 import pandas as pd
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BENCH_DIRS = {
-    'helmholtz2d': os.path.join(ROOT, '2D_Helmholtz'),
-    'diffusion_reaction': os.path.join(ROOT, 'Diffusion-Reaction'),
-    'kovasznay': os.path.join(ROOT, 'Kovasznay_flow'),
-}
+from paths import ROOT, RESULTS, bench_dir, runs_dir
+
+BENCH_DIRS = {k: bench_dir(k) for k in
+              ('helmholtz2d', 'diffusion_reaction', 'kovasznay')}
 BENCH_LABELS = {
     'helmholtz2d': '2D Helmholtz',
     'diffusion_reaction': 'Diffusion-reaction',
     'kovasznay': 'Kovasznay flow',
 }
-RESULTS = os.path.join(ROOT, 'results')
+
 
 # fixed model order and colors (R black like the paper; FF = blue steps by sigma; LPA red)
 # R1 = vanilla with single-output head (like-for-like metric with LPA/FF on Helmholtz)
@@ -42,7 +40,7 @@ MODEL_COLORS = {
 
 def load_runs(bench, exp):
     """Load all run_*.json for a benchmark/experiment into a DataFrame."""
-    d = os.path.join(BENCH_DIRS[bench], 'results', 'runs', exp)
+    d = runs_dir(bench, exp)
     rows = []
     for p in sorted(glob.glob(os.path.join(d, 'run_*.json'))):
         with open(p) as f:
@@ -51,7 +49,7 @@ def load_runs(bench, exp):
 
 
 def load_acc_hist(bench, exp, nh, nn, key_id, trial):
-    p = os.path.join(BENCH_DIRS[bench], 'results', 'runs', exp,
+    p = os.path.join(runs_dir(bench, exp),
                      'acc_hist_%s_%s_%s_%s.txt' % (nh, nn, key_id, trial))
     if not os.path.exists(p):
         return None

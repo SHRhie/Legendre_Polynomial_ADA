@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from agg_common import (BENCH_LABELS, MODEL_COLORS, MODEL_LABELS, MODEL_ORDER,
                         RESULTS, fmt_sci, geo_mean_curves, load_acc_hist,
                         load_runs, mean_std)
-from plot_style import apply_style, log_minor_labels, savefig
+from plot_style import apply_style, label_panels, log_minor_labels, savefig
 import matplotlib.pyplot as plt
 
 OUT = os.path.join(RESULTS, 'ff_baseline')
@@ -190,6 +190,7 @@ def main():
                 ax.set_ylabel(r'Relative $L_2$ error')
                 ax.legend(fontsize=9)
             ax.set_title(BENCH_LABELS[bench], fontsize=12)
+        label_panels(list(np.ravel(axes)), loc='upper right')
         savefig(fig, os.path.join(OUT, 'ff_supp_lr.png'))
 
     # ---- supplementary: Kovasznay N_r robustness (5000 vs 10000) --------
