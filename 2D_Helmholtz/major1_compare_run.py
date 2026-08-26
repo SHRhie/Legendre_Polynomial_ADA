@@ -1,6 +1,6 @@
 """Paired coordinate-PINN baselines for Referee 1, Major Comment 1.
 
-This runner is intentionally separate from ``run_experiment.py``.  It keeps the
+This runner is intentionally separate from ``revision_run.py``.  It keeps the
 Helmholtz PDE, automatic-differentiation residual, loss weights, and training
 budget common while varying only the coordinate representation/activation.
 
@@ -66,7 +66,7 @@ class ExplicitLPA(tf.keras.layers.Layer):
         super().__init__(dtype=dtype, name="lpa")
         self.order = int(order)
         self.panels = int(panels)
-        self.seed = int(seed)
+        self.seed = None if seed is None else int(seed)
         coefs = [get_Legendre_coefs(i, self.panels) for i in range(1, self.order + 1)]
         self.coefs = tf.constant(np.asarray(coefs, dtype=np.float32), dtype=dtype)
 
@@ -108,7 +108,7 @@ class DirectLegendre(tf.keras.layers.Layer):
     def __init__(self, order: int, seed: int, dtype: str = "float32"):
         super().__init__(dtype=dtype, name="direct_legendre")
         self.order = int(order)
-        self.seed = int(seed)
+        self.seed = None if seed is None else int(seed)
 
     def build(self, input_shape):
         self.coefficients = self.add_weight(
@@ -143,7 +143,7 @@ class FourierFeatures(tf.keras.layers.Layer):
         super().__init__(dtype=dtype, name="fourier_features")
         self.features = int(features)
         self.sigma = float(sigma)
-        self.seed = int(seed)
+        self.seed = None if seed is None else int(seed)
         self.trainable_frequencies = bool(trainable_frequencies)
         self.oracle = bool(oracle)
 
@@ -156,7 +156,8 @@ class FourierFeatures(tf.keras.layers.Layer):
             # 0.5*(cos(2*pi*(xi_x-xi_y))-cos(2*pi*(xi_x+xi_y))).
             initial = np.asarray([[1.0, 1.0], [-1.0, 1.0]], dtype=np.float32)
         else:
-            rng = np.random.default_rng(self.seed)
+            rng = np.random.default_rng(self.seed if self.seed is not None
+                                        else np.random.randint(0, 2 ** 31 - 1))
             initial = rng.normal(0.0, self.sigma, (input_dim, self.features)).astype(np.float32)
         self.frequencies = self.add_weight(
             name="frequencies",
@@ -187,7 +188,7 @@ class SineDense(tf.keras.layers.Layer):
         self.units = int(units)
         self.omega0 = float(omega0)
         self.first = bool(first)
-        self.seed = int(seed)
+        self.seed = None if seed is None else int(seed)
 
     def build(self, input_shape):
         fan_in = int(input_shape[-1])
@@ -206,7 +207,7 @@ class SineDense(tf.keras.layers.Layer):
             name="bias",
             shape=(self.units,),
             initializer=tf.keras.initializers.RandomUniform(
-                -bias_limit, bias_limit, seed=self.seed + 10_000
+                -bias_limit, bias_limit, seed=None if self.seed is None else self.seed + 10_000
             ),
             trainable=True,
             dtype=self.dtype,
@@ -260,12 +261,50 @@ def scaled_input(x: tf.Tensor, lb: tf.Tensor, ub: tf.Tensor) -> tf.Tensor:
     return 2.0 * (x - lb) / (ub - lb) - 1.0
 
 
+def seed_offset(seed, step: int):
+    """Per-layer seed, or None under the original single-global-seed scheme.
+
+    ``main_run_LPA.py`` seeds once with ``set_global_seed(1234 + trial)`` and lets
+    every initializer draw from that one stream, so there is no per-layer seed to
+    offset; passing None makes Keras fall back to the global generator.
+    """
+    return None if seed is None else seed + step
+
+
+def global_stream_samples(lb: np.ndarray, ub: np.ndarray, n_b: int, n_r: int):
+    """Boundary and collocation points from the global TF stream.
+
+    Reproduces the draw order of ``get_XB`` followed by ``get_Xr`` in pinn_utils,
+    which is what ``Solver_PINN`` does after the model has been built.  Because the
+    model construction consumes part of the same stream, the points depend on the
+    architecture -- the property that distinguishes the original scheme from the
+    campaign's three independent streams.
+    """
+    x_b = tf.random.uniform((n_b, 1), lb[0], ub[0], dtype=tf.float32)
+    y_b = tf.random.uniform((n_b, 1), lb[1], ub[1], dtype=tf.float32)
+    x_r = tf.random.uniform((n_r, 1), lb[0], ub[0], dtype=tf.float32)
+    y_r = tf.random.uniform((n_r, 1), lb[1], ub[1], dtype=tf.float32)
+    x0 = np.full((n_b, 1), lb[0], dtype=np.float32)
+    x1 = np.full((n_b, 1), ub[0], dtype=np.float32)
+    y0 = np.full((n_b, 1), lb[1], dtype=np.float32)
+    y1 = np.full((n_b, 1), ub[1], dtype=np.float32)
+    xb, yb = x_b.numpy(), y_b.numpy()
+    arrays = (
+        np.concatenate([x0, yb], axis=1),
+        np.concatenate([x1, yb], axis=1),
+        np.concatenate([xb, y0], axis=1),
+        np.concatenate([xb, y1], axis=1),
+        np.concatenate([x_r.numpy(), y_r.numpy()], axis=1),
+    )
+    return tuple(tf.constant(v, dtype=tf.float32) for v in arrays), arrays
+
+
 def dense_tanh_stack(x, hidden_layers: int, width: int, seed: int):
     for layer_idx in range(hidden_layers):
         x = tf.keras.layers.Dense(
             width,
             activation="tanh",
-            kernel_initializer=seeded_glorot(seed + layer_idx),
+            kernel_initializer=seeded_glorot(seed_offset(seed, layer_idx)),
             bias_initializer="zeros",
             name=f"tanh_dense_{layer_idx + 1}",
         )(x)
@@ -277,7 +316,7 @@ def build_model(args, lb: tf.Tensor, ub: tf.Tensor, init_seed: int, feature_seed
     x = tf.keras.layers.Lambda(lambda value: scaled_input(value, lb, ub), name="scale_to_unit")(inputs)
     model_key = args.model.upper()
 
-    if model_key == "FF" or model_key == "TFF" or model_key == "FF_ORACLE":
+    if model_key in {"FF", "TFF", "FF_ORACLE", "FF_LPA"}:
         x = FourierFeatures(
             args.ff_features,
             args.sigma,
@@ -286,22 +325,31 @@ def build_model(args, lb: tf.Tensor, ub: tf.Tensor, init_seed: int, feature_seed
             oracle=(model_key == "FF_ORACLE"),
         )(x)
         x = dense_tanh_stack(x, args.nh, args.nn, init_seed)
-    elif model_key == "SIREN":
+        if model_key == "FF_LPA":
+            # The Fourier embedding sits at the input; the last hidden activation is
+            # still tanh, so the readout sees the same bounded [-1, 1] range as in the
+            # tanh + LPA model and needs no rescaling.
+            x = ExplicitLPA(args.order, args.panels, seed=seed_offset(init_seed, 5_000))(x)
+    elif model_key in {"SIREN", "SIREN_LPA"}:
         for layer_idx in range(args.nh):
             omega = args.omega0 if layer_idx == 0 else args.hidden_omega0
             x = SineDense(
                 args.nn,
                 omega0=omega,
                 first=(layer_idx == 0),
-                seed=init_seed + layer_idx,
+                seed=seed_offset(init_seed, layer_idx),
                 name=f"sine_dense_{layer_idx + 1}",
             )(x)
+        if model_key == "SIREN_LPA":
+            # The sine activation is bounded in [-1, 1], the interval on which the
+            # Legendre basis is orthogonal, so the readout needs no rescaling here.
+            x = ExplicitLPA(args.order, args.panels, seed=seed_offset(init_seed, 5_000))(x)
     elif model_key == "NLAAF":
         for layer_idx in range(args.nh):
             x = tf.keras.layers.Dense(
                 args.nn,
                 activation=None,
-                kernel_initializer=seeded_glorot(init_seed + layer_idx),
+                kernel_initializer=seeded_glorot(seed_offset(init_seed, layer_idx)),
                 bias_initializer="zeros",
                 name=f"adaptive_dense_{layer_idx + 1}",
             )(x)
@@ -314,21 +362,27 @@ def build_model(args, lb: tf.Tensor, ub: tf.Tensor, init_seed: int, feature_seed
     else:
         x = dense_tanh_stack(x, args.nh, args.nn, init_seed)
         if model_key == "LPA":
-            x = ExplicitLPA(args.order, args.panels, seed=init_seed + 5_000)(x)
+            x = ExplicitLPA(args.order, args.panels, seed=seed_offset(init_seed, 5_000))(x)
         elif model_key == "LPA_MIN":
-            x = ExplicitLPA(args.order, args.order + 1, seed=init_seed + 5_000)(x)
+            x = ExplicitLPA(args.order, args.order + 1, seed=seed_offset(init_seed, 5_000))(x)
         elif model_key == "DIRECT_LEGENDRE":
-            x = DirectLegendre(args.order, seed=init_seed + 5_000)(x)
+            x = DirectLegendre(args.order, seed=seed_offset(init_seed, 5_000))(x)
         elif model_key != "TANH":
             raise ValueError(f"Unknown model: {args.model}")
 
-    if model_key == "SIREN":
+    head_rule = getattr(args, "head_init", "auto")
+    if head_rule == "auto":
+        # the SIREN output rule is derived for a sine-activated predecessor; when the LPA
+        # readout sits in between, the predecessor is the readout, so we use the same
+        # initializer as the tanh + LPA model
+        head_rule = "siren" if model_key == "SIREN" else "glorot"
+    if model_key in {"SIREN", "SIREN_LPA"} and head_rule == "siren":
         final_limit = np.sqrt(6.0 / args.nn) / args.hidden_omega0
         output_init = tf.keras.initializers.RandomUniform(
-            -final_limit, final_limit, seed=init_seed + args.nh + 1
+            -final_limit, final_limit, seed=seed_offset(init_seed, args.nh + 1)
         )
     else:
-        output_init = seeded_glorot(init_seed + args.nh + 1)
+        output_init = seeded_glorot(seed_offset(init_seed, args.nh + 1))
     outputs = tf.keras.layers.Dense(
         1,
         activation=None,
@@ -403,14 +457,24 @@ def key_id(args) -> str:
         base = f"DIRECT_LEGENDRE_P{args.order}"
     elif model in {"FF", "TFF"}:
         base = f"{model}_m{args.ff_features}_s{args.sigma:g}"
+    elif model == "FF_LPA":
+        base = (f"FF_LPA_m{args.ff_features}_s{args.sigma:g}"
+                f"_P{args.order}_N{args.panels}")
     elif model == "FF_ORACLE":
         base = "FF_ORACLE_m2"
     elif model == "SIREN":
         base = f"SIREN_w{args.omega0:g}_hw{args.hidden_omega0:g}"
+    elif model == "SIREN_LPA":
+        base = (f"SIREN_LPA_w{args.omega0:g}_hw{args.hidden_omega0:g}"
+                f"_P{args.order}_N{args.panels}")
+        if getattr(args, "head_init", "auto") == "siren":
+            base += "_hsiren"
     elif model == "NLAAF":
         base = f"NLAAF_n{args.adaptive_scale:g}_a{args.adaptive_init:g}_sr{args.slope_recovery:g}"
     else:
         base = model
+    if getattr(args, "seed_scheme", "campaign") == "original":
+        base += "_origseed"
     return f"{base}_lr{args.lr:g}"
 
 
@@ -419,8 +483,11 @@ def parse_args():
     parser.add_argument(
         "--model",
         required=True,
-        choices=["TANH", "LPA", "LPA_MIN", "DIRECT_LEGENDRE", "FF", "TFF", "FF_ORACLE", "SIREN", "NLAAF"],
+        choices=["TANH", "LPA", "LPA_MIN", "DIRECT_LEGENDRE", "FF", "TFF", "FF_ORACLE", "FF_LPA",
+                 "SIREN", "SIREN_LPA", "NLAAF"],
     )
+    parser.add_argument("--head-init", choices=["auto", "siren", "glorot"], default="auto",
+                        help="output-layer initializer rule; auto = siren for SIREN, glorot otherwise")
     parser.add_argument("--nh", type=int, default=3)
     parser.add_argument("--nn", type=int, default=10)
     parser.add_argument("--trial", type=int, default=0)
@@ -441,6 +508,14 @@ def parse_args():
     parser.add_argument("--acc-every", type=int, default=50)
     parser.add_argument("--resid-points", type=int, default=4096)
     parser.add_argument("--skip-residual-metrics", action="store_true")
+    parser.add_argument(
+        "--seed-scheme",
+        default="campaign",
+        choices=["campaign", "original"],
+        help="campaign: independent init/data/feature streams so every configuration "
+             "sees identical collocation points.  original: a single global seed as in "
+             "main_run_LPA.py, so the draw depends on the architecture.",
+    )
     parser.add_argument("--exp", default="major1_compare")
     return parser.parse_args()
 
@@ -449,11 +524,20 @@ def main():
     args = parse_args()
     tf.keras.utils.disable_interactive_logging()
 
-    init_seed = BASE_SEED + args.trial
-    data_seed = DATA_SEED_OFFSET + BASE_SEED + args.trial
-    feature_seed = FEATURE_SEED_OFFSET + BASE_SEED + args.trial
-    tf.keras.utils.set_random_seed(init_seed)
-    np.random.seed(init_seed)
+    original_scheme = args.seed_scheme == "original"
+    trial_seed = BASE_SEED + args.trial
+    if original_scheme:
+        # main_run_LPA.py: one set_global_seed(1234 + trial) governs the weights and,
+        # after the model is built, the boundary and collocation draw as well
+        init_seed = None
+        data_seed = None
+        feature_seed = None
+    else:
+        init_seed = trial_seed
+        data_seed = DATA_SEED_OFFSET + BASE_SEED + args.trial
+        feature_seed = FEATURE_SEED_OFFSET + BASE_SEED + args.trial
+    tf.keras.utils.set_random_seed(trial_seed)
+    np.random.seed(trial_seed)
 
     lb_np = np.asarray([0.0, 0.0], dtype=np.float32)
     ub_np = np.asarray([1.0, 1.0], dtype=np.float32)
@@ -463,12 +547,17 @@ def main():
 
     model = build_model(args, lb, ub, init_seed, feature_seed)
     bundle = ModelBundle(model, args.model.upper(), args.nh, args.nn, lb, ub, properties)
-    samples, sample_arrays = paired_samples(lb_np, ub_np, args.n_b, args.n_r, data_seed)
+    if original_scheme:
+        samples, sample_arrays = global_stream_samples(lb_np, ub_np, args.n_b, args.n_r)
+    else:
+        samples, sample_arrays = paired_samples(lb_np, ub_np, args.n_b, args.n_r, data_seed)
     checksum = sample_checksum(sample_arrays)
 
-    print_runtime_info(seed=init_seed, extra_config={
+    print_runtime_info(seed=trial_seed, extra_config={
         "model": args.model,
         "key_id": key_id(args),
+        "seed_scheme": args.seed_scheme,
+        "trial_seed": trial_seed,
         "init_seed": init_seed,
         "data_seed": data_seed,
         "feature_seed": feature_seed,
@@ -530,7 +619,7 @@ def main():
             model, lb_np, ub_np, num_points=args.resid_points, seed=777
         )
 
-    output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", "runs", args.exp)
+    output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", "revision", args.exp)
     os.makedirs(output_dir, exist_ok=True)
     stem = f"{args.nh}_{args.nn}_{key_id(args)}_{args.trial}"
     np.savetxt(os.path.join(output_dir, f"loss_hist_{stem}.txt"), np.asarray(solver.loss_history), delimiter=",")
@@ -545,21 +634,24 @@ def main():
         "nh": args.nh,
         "nn": args.nn,
         "trial": args.trial,
+        "seed_scheme": args.seed_scheme,
+        "trial_seed": trial_seed,
         "init_seed": init_seed,
         "data_seed": data_seed,
         "feature_seed": feature_seed,
         "collocation_sha256": checksum,
         "n_params": n_params,
-        "order": args.order if args.model.upper() in {"LPA", "LPA_MIN", "DIRECT_LEGENDRE"} else None,
-        "panels": args.panels if args.model.upper() == "LPA" else (args.order + 1 if args.model.upper() == "LPA_MIN" else None),
-        "ff_features": args.ff_features if args.model.upper() in {"FF", "TFF", "FF_ORACLE"} else None,
-        "sigma": args.sigma if args.model.upper() in {"FF", "TFF"} else None,
-        "omega0": args.omega0 if args.model.upper() == "SIREN" else None,
-        "hidden_omega0": args.hidden_omega0 if args.model.upper() == "SIREN" else None,
+        "order": args.order if args.model.upper() in {"LPA", "LPA_MIN", "DIRECT_LEGENDRE", "SIREN_LPA", "FF_LPA"} else None,
+        "panels": args.panels if args.model.upper() in {"LPA", "SIREN_LPA", "FF_LPA"} else (args.order + 1 if args.model.upper() == "LPA_MIN" else None),
+        "ff_features": args.ff_features if args.model.upper() in {"FF", "TFF", "FF_ORACLE", "FF_LPA"} else None,
+        "sigma": args.sigma if args.model.upper() in {"FF", "TFF", "FF_LPA"} else None,
+        "omega0": args.omega0 if args.model.upper() in {"SIREN", "SIREN_LPA"} else None,
+        "hidden_omega0": args.hidden_omega0 if args.model.upper() in {"SIREN", "SIREN_LPA"} else None,
         "adaptive_scale": args.adaptive_scale if args.model.upper() == "NLAAF" else None,
         "adaptive_init": args.adaptive_init if args.model.upper() == "NLAAF" else None,
         "slope_recovery_weight": slope_weight,
         "slope_recovery_final": slope_recovery,
+        "head_init": getattr(args, "head_init", "auto"),
         "lr": args.lr,
         "adam_steps": args.adam_steps,
         "lbfgs_maxiter": args.lbfgs_maxiter,
